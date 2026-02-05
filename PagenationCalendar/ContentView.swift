@@ -42,45 +42,60 @@ extension ContentView {
                 .foregroundStyle(.gray)
                 .padding(.top, 10)
             
-            // Week View
-            HStack(spacing: 0) {
-                ForEach(store.currentWeekDates) { item in
-                    VStack(spacing: 8) {
-                        Text(item.date.format("EEE"))
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                        
-                        Text("\(item.day)")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(item.isSelected ? .white : .black)
-                            .frame(width: 36, height: 36)
-                            .background {
-                                if item.isSelected {
-                                    Circle()
-                                        .fill(.black)
-                                } else if item.isToday {
-                                    Circle()
-                                        .strokeBorder(.gray, lineWidth: 1)
-                                }
-                            }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        store.send(.view(.dayTapped(item)))
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 0) {
+                    ForEach(-12...0, id: \.self) { offset in
+                        weekView(for: offset)
+                            .containerRelativeFrame(.horizontal)
                     }
                 }
+                .scrollTargetLayout()
             }
+            .scrollTargetBehavior(.paging)
+            .scrollBounceBehavior(.basedOnSize)
+            .scrollPosition(id: Binding(
+                get: { store.focusedWeekOffset },
+                set: { store.send(.view(.weekScrollChanged($0))) }
+            ))
             .padding(.vertical, 10)
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-            .gesture(
-                DragGesture()
-                    .onEnded { value in
-                        store.send(.view(.dragGestureEnded(translation: value.translation.width)))
+        }
+        .frame(height: 150)
+    }
+    
+    @ViewBuilder
+    func weekView(for offset: Int) -> some View {
+        HStack(spacing: 0) {
+            ForEach(store.state.weekDates(for: offset)) { item in
+                VStack(spacing: 8) {
+                    Text(item.date.format("EEE"))
+                        .font(.caption)
+                        .foregroundStyle(item.isFuture ? .gray.opacity(0.3) : .gray)
+                    
+                    Text("\(item.day)")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(item.isSelected ? .white : (item.isFuture ? .gray.opacity(0.3) : .black))
+                        .frame(width: 36, height: 36)
+                        .background {
+                            if item.isSelected {
+                                Circle()
+                                    .fill(.black)
+                            } else if item.isToday {
+                                Circle()
+                                    .strokeBorder(.gray, lineWidth: 1)
+                            }
+                        }
+                }
+                .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if !item.isFuture {
+                        store.send(.view(.dayTapped(item)))
                     }
-            )
+                }
+            }
         }
     }
 }

@@ -13,9 +13,11 @@ struct CalendarItem: Identifiable, Equatable {
     var day: Int
     var isToday: Bool
     var isSelected: Bool
+    var isFuture: Bool = false
 }
 
 extension Date {
+
     func startOfWeek(using calendar: Calendar = .current) -> Date {
         let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
         return calendar.date(from: components) ?? self
@@ -37,5 +39,9 @@ extension Date {
     
     var isToday: Bool {
         Calendar.current.isDateInToday(self)
+    }
+    
+    var isFuture: Bool {
+        self > Date()
     }
 }

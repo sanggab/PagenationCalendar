@@ -19,6 +19,9 @@ struct MainReducer {
         var selectedDate: Date = Date()
         var currentWeekStart: Date = Date().startOfWeek()
         
+        // Scroll Paging Logic
+        var focusedWeekOffset: Int = 0 // 0 means current week, -1 means last week
+        
         var calendar = Calendar.current
         
         public init() {
@@ -26,7 +29,29 @@ struct MainReducer {
             self.currentWeekDates = self.generateWeekDates(for: self.currentWeekStart)
         }
         
+        mutating func updateCurrentWeekDates() {
+            // Calculate start date based on offset
+            if let newStart = calendar.date(byAdding: .weekOfYear, value: focusedWeekOffset, to: Date().startOfWeek()) {
+                self.currentWeekStart = newStart
+                self.currentWeekDates = generateWeekDates(for: newStart)
+            }
+        }
+        
         func generateWeekDates(for start: Date) -> [CalendarItem] {
+            let dates = start.datesOfWeek(using: calendar)
+            return dates.map { date in
+                CalendarItem(
+                    date: date,
+                    day: calendar.component(.day, from: date),
+                    isToday: calendar.isDateInToday(date),
+                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate)
+                )
+            }
+        }
+        
+        // Helper to get week items for a specific offset (used in LazyHStack)
+        func weekDates(for offset: Int) -> [CalendarItem] {
+            guard let start = calendar.date(byAdding: .weekOfYear, value: offset, to: Date().startOfWeek()) else { return [] }
             let dates = start.datesOfWeek(using: calendar)
             return dates.map { date in
                 CalendarItem(
@@ -47,13 +72,12 @@ struct MainReducer {
         @CasePathable
         enum ViewAction: Equatable {
             case onAppear
-            case dragGestureEnded(translation: CGFloat)
             case dayTapped(CalendarItem)
+            case weekScrollChanged(Int?)
         }
         
         @CasePathable
         enum InnerAction: Equatable {
-            case updateWeek(by: Int)
             case updateSelectedDate(Date)
         }
     }
@@ -76,16 +100,14 @@ extension MainReducer {
             case .onAppear:
                 return .none
                 
-            case let .dragGestureEnded(translation):
-                let threshold: CGFloat = 50
-                if translation < -threshold {
-                    return .send(.inner(.updateWeek(by: 1)))
-                } else if translation > threshold {
-                    return .send(.inner(.updateWeek(by: -1)))
-                }
+            case let .weekScrollChanged(offset):
+                guard let offset = offset else { return .none }
+                state.focusedWeekOffset = offset
+                state.updateCurrentWeekDates()
                 return .none
                 
             case let .dayTapped(item):
+                if item.isFuture { return .none }
                 return .send(.inner(.updateSelectedDate(item.date)))
             }
         }
