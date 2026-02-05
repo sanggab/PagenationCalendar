@@ -15,7 +15,28 @@ import ComposableArchitecture
 struct MainReducer {
     @ObservableState
     struct State: Equatable {
-//        var calenderList:
+        var currentWeekDates: [CalendarItem] = []
+        var selectedDate: Date = Date()
+        var currentWeekStart: Date = Date().startOfWeek()
+        
+        var calendar = Calendar.current
+        
+        public init() {
+            self.calendar.locale = Locale(identifier: "ko_KR")
+            self.currentWeekDates = self.generateWeekDates(for: self.currentWeekStart)
+        }
+        
+        func generateWeekDates(for start: Date) -> [CalendarItem] {
+            let dates = start.datesOfWeek(using: calendar)
+            return dates.map { date in
+                CalendarItem(
+                    date: date,
+                    day: calendar.component(.day, from: date),
+                    isToday: calendar.isDateInToday(date),
+                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate)
+                )
+            }
+        }
     }
     
     @CasePathable
@@ -23,15 +44,17 @@ struct MainReducer {
         case view(ViewAction)
         case inner(InnerAction)
         
-        
         @CasePathable
         enum ViewAction: Equatable {
-            case on
+            case onAppear
+            case dragGestureEnded(translation: CGFloat)
+            case dayTapped(CalendarItem)
         }
         
         @CasePathable
         enum InnerAction: Equatable {
-            case on
+            case updateWeek(by: Int)
+            case updateSelectedDate(Date)
         }
     }
     
@@ -50,8 +73,20 @@ extension MainReducer {
             guard case let .view(viewAction) = action else { return .none }
             
             switch viewAction {
-            case .on:
+            case .onAppear:
                 return .none
+                
+            case let .dragGestureEnded(translation):
+                let threshold: CGFloat = 50
+                if translation < -threshold {
+                    return .send(.inner(.updateWeek(by: 1)))
+                } else if translation > threshold {
+                    return .send(.inner(.updateWeek(by: -1)))
+                }
+                return .none
+                
+            case let .dayTapped(item):
+                return .send(.inner(.updateSelectedDate(item.date)))
             }
         }
     }
@@ -62,10 +97,7 @@ extension MainReducer {
         Reduce { state, action in
             guard case let .inner(innerAction) = action else { return .none }
             
-            switch innerAction {
-            case .on:
-                return .none
-            }
+            return self.handleInnerAction(state: &state, action: innerAction)
         }
     }
 }
