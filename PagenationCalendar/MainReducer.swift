@@ -21,6 +21,7 @@ struct MainReducer {
         
         // Scroll Paging Logic
         var focusedWeekOffset: Int = 0 // 0 means current week, -1 means last week
+        var minWeekOffset: Int = -12 // Initial range
         
         var calendar = Calendar.current
         
@@ -44,7 +45,8 @@ struct MainReducer {
                     date: date,
                     day: calendar.component(.day, from: date),
                     isToday: calendar.isDateInToday(date),
-                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate)
+                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate),
+                    isFuture: date.isFuture
                 )
             }
         }
@@ -58,7 +60,8 @@ struct MainReducer {
                     date: date,
                     day: calendar.component(.day, from: date),
                     isToday: calendar.isDateInToday(date),
-                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate)
+                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate),
+                    isFuture: date.isFuture
                 )
             }
         }
@@ -104,6 +107,12 @@ extension MainReducer {
                 guard let offset = offset else { return .none }
                 state.focusedWeekOffset = offset
                 state.updateCurrentWeekDates()
+                
+                // Infinite Scroll: Load more past weeks if close to the edge
+                if offset < state.minWeekOffset + 5 {
+                    state.minWeekOffset -= 52 // Load one more year
+                }
+                
                 return .none
                 
             case let .dayTapped(item):

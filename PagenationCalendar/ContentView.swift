@@ -44,7 +44,7 @@ extension ContentView {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 0) {
-                    ForEach(-12...0, id: \.self) { offset in
+                    ForEach(store.minWeekOffset...0, id: \.self) { offset in
                         weekView(for: offset)
                             .containerRelativeFrame(.horizontal)
                     }
@@ -52,7 +52,6 @@ extension ContentView {
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(.paging)
-            .scrollBounceBehavior(.basedOnSize)
             .scrollPosition(id: Binding(
                 get: { store.focusedWeekOffset },
                 set: { store.send(.view(.weekScrollChanged($0))) }
