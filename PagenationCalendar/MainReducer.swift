@@ -22,19 +22,41 @@ struct MainReducer {
         // Scroll Paging Logic
         var focusedWeekOffset: Int = 0 // 0 means current week, -1 means last week
         var minWeekOffset: Int = -12 // Initial range
+        var loadedWeeks: [Int: [CalendarItem]] = [:] 
         
         var calendar = Calendar.current
         
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
-            self.currentWeekDates = self.generateWeekDates(for: self.currentWeekStart)
+            // Initialize with default range
+            self.ensureWeeksLoaded(from: minWeekOffset, to: 0)
+            self.currentWeekDates = self.loadedWeeks[0] ?? []
+//            print("상갑 logEvent \(#function) currentWeekDates \(currentWeekDates)")
+            print("상갑 logEvent \(#function) loadedWeeks \(loadedWeeks)")
         }
         
         mutating func updateCurrentWeekDates() {
-            // Calculate start date based on offset
-            if let newStart = calendar.date(byAdding: .weekOfYear, value: focusedWeekOffset, to: Date().startOfWeek()) {
-                self.currentWeekStart = newStart
-                self.currentWeekDates = generateWeekDates(for: newStart)
+            if let weeks = loadedWeeks[focusedWeekOffset] {
+                self.currentWeekDates = weeks
+                if let firstDate = weeks.first?.date {
+                     self.currentWeekStart = firstDate
+                }
+            } else {
+                if let newStart = calendar.date(byAdding: .weekOfYear, value: focusedWeekOffset, to: Date().startOfWeek()) {
+                    self.currentWeekStart = newStart
+                    self.currentWeekDates = generateWeekDates(for: newStart)
+                }
+            }
+        }
+        
+        mutating func ensureWeeksLoaded(from min: Int, to max: Int) {
+            for offset in min...max {
+                if loadedWeeks[offset] == nil {
+                     if let start = calendar.date(byAdding: .weekOfYear, value: offset, to: Date().startOfWeek()) {
+                         loadedWeeks[offset] = generateWeekDates(for: start)
+                         
+                     }
+                }
             }
         }
         
@@ -53,17 +75,7 @@ struct MainReducer {
         
         // Helper to get week items for a specific offset (used in LazyHStack)
         func weekDates(for offset: Int) -> [CalendarItem] {
-            guard let start = calendar.date(byAdding: .weekOfYear, value: offset, to: Date().startOfWeek()) else { return [] }
-            let dates = start.datesOfWeek(using: calendar)
-            return dates.map { date in
-                CalendarItem(
-                    date: date,
-                    day: calendar.component(.day, from: date),
-                    isToday: calendar.isDateInToday(date),
-                    isSelected: calendar.isDate(date, inSameDayAs: selectedDate),
-                    isFuture: date.isFuture
-                )
-            }
+            return loadedWeeks[offset] ?? []
         }
     }
     
@@ -105,12 +117,15 @@ extension MainReducer {
                 
             case let .weekScrollChanged(offset):
                 guard let offset = offset else { return .none }
+                print("상갑 logEvent \(#function) offset \(offset)")
                 state.focusedWeekOffset = offset
                 state.updateCurrentWeekDates()
                 
                 // Infinite Scroll: Load more past weeks if close to the edge
                 if offset < state.minWeekOffset + 5 {
-                    state.minWeekOffset -= 52 // Load one more year
+                    let newMin = state.minWeekOffset - 52
+                    state.ensureWeeksLoaded(from: newMin, to: state.minWeekOffset - 1)
+                    state.minWeekOffset = newMin
                 }
                 
                 return .none
