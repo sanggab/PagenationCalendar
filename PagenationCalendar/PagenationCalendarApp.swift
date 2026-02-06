@@ -13,12 +13,18 @@ import ComposableArchitecture
 struct PagenationCalendarApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(
+            CalendarView(
                 store: Store(
-                    initialState: MainReducer.State(),
-                    reducer: { MainReducer() }
+                    initialState: CalendarReducer.State(),
+                    reducer: { CalendarReducer() }
                 )
             )
+//            ContentView(
+//                store: Store(
+//                    initialState: MainReducer.State(),
+//                    reducer: { MainReducer() }
+//                )
+//            )
         }
     }
 }

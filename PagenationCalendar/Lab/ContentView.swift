@@ -52,7 +52,6 @@ extension ContentView {
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(.paging)
-//            .scrollBounceDisabled(true)
             .scrollPosition(id: Binding(
                 get: { store.focusedWeekOffset },
                 set: { store.send(.view(.weekScrollChanged($0))) }
