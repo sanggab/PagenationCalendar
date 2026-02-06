@@ -42,6 +42,7 @@ struct CalendarReducer {
         enum ViewAction: Equatable {
             case onAppear
             case scrollChanged(DayModel.ID?)
+            case dayTapped(DayModel)
         }
         
         @CasePathable

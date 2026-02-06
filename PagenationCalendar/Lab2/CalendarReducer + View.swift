@@ -15,13 +15,11 @@ extension CalendarReducer {
         case .onAppear:
             return viewOnAppearAction(&state)
             
-        case let .scrollChanged(id):
-            state.currentScrollID = id
-            if let id = id, let dayModel = state.model.first(where: { $0.id == id }) {
-                // 해당 날짜를 기준으로 년월 타이틀 업데이트
-                state.currentTitle = formatTitle(date: dayModel.date, calendar: state.calendar)
-            }
-            return .none
+        case .scrollChanged(let id):
+            return viewScrollChanged(&state, id: id)
+            
+        case .dayTapped(let dayModel):
+            return viewDayTappedAction(&state, model: dayModel)
         }
     }
 }
@@ -68,42 +66,50 @@ extension CalendarReducer {
                 let model = DayModel(
                     date: date,
                     dayString: dayString,
-                    weekday: weekday
+                    weekday: weekday,
+                    isToday: calendar.isDateInToday(date),
+                    isSelected: calendar.isDate(date, inSameDayAs: now),
+                    isFuture: date.isFuture
                 )
                 allDates.append(model)
                 
                 // 오늘 날짜인 경우 ScrollID 저장
                 if calendar.isDateInToday(date) {
                     state.currentScrollID = model.id
-                }
-            }
         }
-        
+    }
+}
         print("상갑 logEvent Generated dates from \(gridStartDate) to \(gridEndDate), total: \(allDates.count)")
-        
         state.model = allDates
         
         // 타이틀 설정 (오늘 날짜 기준)
-        state.currentTitle = formatTitle(date: now, calendar: calendar)
+        let titleFormatter = DateFormatter()
+        titleFormatter.dateFormat = "yyyy년 M월"
+        titleFormatter.locale = Locale(identifier: "ko_KR")
+        state.currentTitle = titleFormatter.string(from: now)
         
         return .none
     }
 }
 
 extension CalendarReducer {
-    private func formatTitle(date: Date, calendar: Calendar) -> String {
-        let currentYear = calendar.component(.year, from: Date())
-        let targetYear = calendar.component(.year, from: date)
-        
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        
-        if currentYear == targetYear {
-            formatter.dateFormat = "M. d"
-        } else {
-            formatter.dateFormat = "yyyy년 M. d"
+    func viewScrollChanged(_ state: inout CalendarReducer.State, id: DayModel.ID?) -> Effect<Action> {
+        state.currentScrollID = id
+        if let id = id, let dayModel = state.model.first(where: { $0.id == id }) {
+            // 해당 날짜를 기준으로 년월 타이틀 업데이트
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy년 M월"
+            formatter.locale = Locale(identifier: "ko_KR")
+            state.currentTitle = formatter.string(from: dayModel.date)
         }
         
-        return formatter.string(from: date)
+        return .none
+    }
+}
+
+extension CalendarReducer {
+    func viewDayTappedAction(_ state: inout CalendarReducer.State, model dayModel: DayModel) -> Effect<Action> {
+        if dayModel.isFuture { return .none }
+        return .none
     }
 }

@@ -63,6 +63,11 @@ extension CalendarView {
         .containerRelativeFrame(.horizontal, count: 7, spacing: 0)
         .background(.brown.opacity(0.2))
         .id(model.id)
+        .onTapGesture {
+            if !model.isFuture {
+                store.send(.view(.dayTapped(model)))
+            }
+        }
     }
 }
 
