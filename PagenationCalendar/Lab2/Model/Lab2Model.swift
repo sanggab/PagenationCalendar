@@ -15,6 +15,7 @@ struct DayModel: Identifiable, Equatable {
     var isToday: Bool
     var isSelected: Bool
     var isFuture: Bool
+    var isWritted: Bool
     
     init(
         date: Date,
@@ -22,7 +23,8 @@ struct DayModel: Identifiable, Equatable {
         weekday: String,
         isToday: Bool = false,
         isSelected: Bool = false,
-        isFuture: Bool = false
+        isFuture: Bool = false,
+        isWritted: Bool = false
     ) {
         self.date = date
         self.dayString = dayString
@@ -30,6 +32,7 @@ struct DayModel: Identifiable, Equatable {
         self.isToday = isToday
         self.isSelected = isSelected
         self.isFuture = isFuture
+        self.isWritted = isWritted
     }
 }
 

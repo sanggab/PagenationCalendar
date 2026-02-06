@@ -68,7 +68,8 @@ extension CalendarReducer {
                     weekday: weekday,
                     isToday: calendar.isDateInToday(date),
                     isSelected: calendar.isDate(date, inSameDayAs: now),
-                    isFuture: date.isFuture
+                    isFuture: date.isFuture,
+                    isWritted: Bool.random()
                 )
                 allDates.append(model)
                 

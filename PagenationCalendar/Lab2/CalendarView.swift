@@ -35,7 +35,7 @@ struct CalendarView: View {
                     let weeks = fullWeeks.chunked(into: 7)
                     
                     ForEach(weeks, id: \.first?.id) { weekDays in
-                        HStack(spacing: 0) {
+                        HStack(alignment: .top, spacing: 0) {
                             ForEach(weekDays) { model in
                                 weekView(for: model)
                                     .frame(width: cellWidth)
@@ -72,10 +72,12 @@ extension CalendarView {
                 .frame(width: 28, height: 28)
                 .background(Circle().fill(isBackgroundColor(for: model)))
             
-            Circle()
-                .fill(.black)
-                .frame(width: 4, height: 4)
-                .padding(.top, 10)
+            if model.isSelected || model.isWritted {
+                Circle()
+                    .fill(model.isSelected ? .black : .red)
+                    .frame(width: 4, height: 4)
+                    .padding(.top, 10)
+            }
         }
         .id(model.id)
         .onTapGesture {
