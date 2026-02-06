@@ -117,6 +117,14 @@ extension CalendarReducer {
     func viewDayTappedAction(_ state: inout CalendarReducer.State, model dayModel: DayModel) -> Effect<Action> {
         if dayModel.isFuture { return .none }
         
+        if let prevIndex = state.model.firstIndex(where: { $0.isSelected }) {
+            state.model[prevIndex].isSelected = false
+        }
+        
+        if let newIndex = state.model.firstIndex(where: { $0.id == dayModel.id }) {
+            state.model[newIndex].isSelected = true
+        }
+        
         state.currentTitle = formatTitle(date: dayModel.date, calendar: state.calendar)
         
         let startOfWeek = dayModel.date.startOfWeek(using: state.calendar)

@@ -12,6 +12,10 @@ import ComposableArchitecture
 struct CalendarView: View {
     var store: StoreOf<CalendarReducer>
     
+    private var cellWidth: CGFloat {
+        (UIScreen.main.bounds.width - 32) / 7
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Title
@@ -25,14 +29,24 @@ struct CalendarView: View {
 //                .background(.blue)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                ZStack(alignment: .top) {
-                    LazyHStack(alignment: .top, spacing: 0) {
-                        ForEach(store.model) { model in
-                            weekView(for: model)
+                LazyHStack(alignment: .top, spacing: 0) {
+                    let weekCount = store.model.count / 7
+                    let fullWeeks = Array(store.model.prefix(weekCount * 7))
+                    let weeks = fullWeeks.chunked(into: 7)
+                    
+                    ForEach(weeks, id: \.first?.id) { weekDays in
+                        HStack(spacing: 0) {
+                            ForEach(weekDays) { model in
+                                weekView(for: model)
+                                    .frame(width: cellWidth)
+                            }
                         }
+                        .padding(.horizontal, 16)
+                        .frame(width: UIScreen.main.bounds.width)
+                        .id(weekDays.first?.id)
                     }
-                    .scrollTargetLayout()
                 }
+                .scrollTargetLayout()
             }
             .scrollTargetBehavior(.paging)
             .defaultScrollAnchor(.trailing)
@@ -40,9 +54,7 @@ struct CalendarView: View {
                 get: { store.currentScrollID },
                 set: { store.send(.view(.scrollChanged($0))) }
             ))
-//            .background(.orange.opacity(0.2))
         }
-//        .padding(.horizontal, 16)
         .background(.gray.opacity(0.4))
         .task {
             store.send(.view(.onAppear))
@@ -58,14 +70,13 @@ extension CalendarView {
             
             Text(model.dayString)
                 .frame(width: 28, height: 28)
-                .background(Circle().fill(.gray.opacity(0.5)))
+                .background(Circle().fill(isBackgroundColor(for: model)))
             
             Circle()
                 .fill(.black)
                 .frame(width: 4, height: 4)
                 .padding(.top, 10)
         }
-        .containerRelativeFrame(.horizontal, count: 7, spacing: 0)
         .id(model.id)
         .onTapGesture {
             if !model.isFuture {
@@ -82,4 +93,22 @@ extension CalendarView {
             reducer: { CalendarReducer() }
         )
     )
+}
+
+extension CalendarView {
+    func isBackgroundColor(for model: DayModel) -> Color {
+        if model.isFuture {
+            return Color.gray
+        } else {
+            return model.isSelected ? Color.mint : Color.blue
+        }
+    }
+}
+
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
+    }
 }
