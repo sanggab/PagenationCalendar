@@ -16,6 +16,8 @@ struct CalendarView: View {
         (UIScreen.main.bounds.width - 32) / 7
     }
     
+    private let weekdays = ["월", "화", "수", "목", "금", "토", "일"]
+    
     var body: some View {
         VStack(spacing: 0) {
             // Title
@@ -28,25 +30,42 @@ struct CalendarView: View {
                 .padding(.vertical, 8)
 //                .background(.blue)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(alignment: .top, spacing: 0) {
-                    let weekCount = store.model.count / 7
-                    let fullWeeks = Array(store.model.prefix(weekCount * 7))
-                    let weeks = fullWeeks.chunked(into: 7)
-                    
-                    ForEach(weeks, id: \.first?.id) { weekDays in
-                        HStack(alignment: .top, spacing: 0) {
-                            ForEach(weekDays) { model in
-                                weekView(for: model)
-                                    .frame(width: cellWidth)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .frame(width: UIScreen.main.bounds.width)
-                        .id(weekDays.first?.id)
-                    }
+            let weekCount = store.model.count / 7
+            let fullWeeks = Array(store.model.prefix(weekCount * 7))
+            let weeks = fullWeeks.chunked(into: 7)
+            
+            HStack(spacing: 0) {
+                ForEach(weekdays, id: \.self) { day in
+                    Text(day)
+                        .frame(width: cellWidth)
                 }
-                .scrollTargetLayout()
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 5)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                VStack(spacing: 0) {
+                    LazyHStack(alignment: .top, spacing: 0) {
+                        
+                        ForEach(weeks, id: \.first?.id) { weekDays in
+                            HStack(alignment: .top, spacing: 0) {
+                                ForEach(weekDays) { model in
+                                    weekView(for: model)
+                                        .frame(width: cellWidth)
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(width: UIScreen.main.bounds.width)
+                            .id(weekDays.first?.id)
+                        }
+                    }
+                    .scrollTargetLayout()
+                    .frame(height: 80)
+                    .background(.orange)
+                    
+//                    Rectangle()
+//                        .frame(height: 400)
+                }
             }
             .scrollTargetBehavior(.paging)
             .defaultScrollAnchor(.trailing)
@@ -55,6 +74,7 @@ struct CalendarView: View {
                 set: { store.send(.view(.scrollChanged($0))) }
             ))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(.gray.opacity(0.4))
         .task {
             store.send(.view(.onAppear))
@@ -66,7 +86,6 @@ extension CalendarView {
     @ViewBuilder
     func weekView(for model: DayModel) -> some View {
         VStack(spacing: 2) {
-            Text(model.weekday)
             
             Text(model.dayString)
                 .frame(width: 28, height: 28)
