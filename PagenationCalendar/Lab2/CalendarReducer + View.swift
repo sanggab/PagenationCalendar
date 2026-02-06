@@ -28,7 +28,6 @@ extension CalendarReducer {
 extension CalendarReducer {
     func viewOnAppearAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
         var calendar = state.calendar
-        calendar.firstWeekday = 2 // 1: Sunday, 2: Monday
         
         let startDateComponents = DateComponents(year: 2025, month: 1, day: 1)
         guard let startOf2025 = calendar.date(from: startDateComponents) else { return .none }
@@ -83,10 +82,7 @@ extension CalendarReducer {
         state.model = allDates
         
         // 타이틀 설정 (오늘 날짜 기준)
-        let titleFormatter = DateFormatter()
-        titleFormatter.dateFormat = "yyyy년 M월"
-        titleFormatter.locale = Locale(identifier: "ko_KR")
-        state.currentTitle = titleFormatter.string(from: now)
+        state.currentTitle = formatTitle(date: now, calendar: calendar)
         
         return .none
     }
@@ -95,21 +91,40 @@ extension CalendarReducer {
 extension CalendarReducer {
     func viewScrollChanged(_ state: inout CalendarReducer.State, id: DayModel.ID?) -> Effect<Action> {
         state.currentScrollID = id
-        if let id = id, let dayModel = state.model.first(where: { $0.id == id }) {
-            // 해당 날짜를 기준으로 년월 타이틀 업데이트
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy년 M월"
-            formatter.locale = Locale(identifier: "ko_KR")
-            state.currentTitle = formatter.string(from: dayModel.date)
+        return .none
+    }
+}
+
+extension CalendarReducer {
+    private func formatTitle(date: Date, calendar: Calendar) -> String {
+        let currentYear = calendar.component(.year, from: Date())
+        let targetYear = calendar.component(.year, from: date)
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        
+        if currentYear == targetYear {
+            formatter.dateFormat = "M. d"
+        } else {
+            formatter.dateFormat = "yy. M. d"
         }
         
-        return .none
+        return formatter.string(from: date)
     }
 }
 
 extension CalendarReducer {
     func viewDayTappedAction(_ state: inout CalendarReducer.State, model dayModel: DayModel) -> Effect<Action> {
         if dayModel.isFuture { return .none }
+        
+        state.currentTitle = formatTitle(date: dayModel.date, calendar: state.calendar)
+        
+        let startOfWeek = dayModel.date.startOfWeek(using: state.calendar)
+        
+        if let startDayModel = state.model.first(where: { state.calendar.isDate($0.date, inSameDayAs: startOfWeek) }) {
+            state.currentScrollID = startDayModel.id
+        }
+        
         return .none
     }
 }

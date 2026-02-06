@@ -30,6 +30,7 @@ struct CalendarReducer {
         
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
+            self.calendar.firstWeekday = 2
         }
     }
     

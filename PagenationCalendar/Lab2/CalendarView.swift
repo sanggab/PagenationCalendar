@@ -19,10 +19,10 @@ struct CalendarView: View {
                 .font(.title2)
                 .fontWeight(.bold)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.mint)
+//                .background(.mint)
                 .padding(.horizontal)
                 .padding(.vertical, 8)
-                .background(.blue)
+//                .background(.blue)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 ZStack(alignment: .top) {
@@ -40,9 +40,9 @@ struct CalendarView: View {
                 get: { store.currentScrollID },
                 set: { store.send(.view(.scrollChanged($0))) }
             ))
-            .background(.orange.opacity(0.2))
+//            .background(.orange.opacity(0.2))
         }
-        .padding(.horizontal, 16)
+//        .padding(.horizontal, 16)
         .background(.gray.opacity(0.4))
         .task {
             store.send(.view(.onAppear))
@@ -59,9 +59,13 @@ extension CalendarView {
             Text(model.dayString)
                 .frame(width: 28, height: 28)
                 .background(Circle().fill(.gray.opacity(0.5)))
+            
+            Circle()
+                .fill(.black)
+                .frame(width: 4, height: 4)
+                .padding(.top, 10)
         }
         .containerRelativeFrame(.horizontal, count: 7, spacing: 0)
-        .background(.brown.opacity(0.2))
         .id(model.id)
         .onTapGesture {
             if !model.isFuture {
