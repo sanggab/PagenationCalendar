@@ -34,7 +34,7 @@ struct NutrientData: Identifiable, Equatable {
     }
 }
 
-struct DailyNutrition {
+struct DailyNutrition: Equatable {
     var carbs: NutrientData
     var protein: NutrientData
     var fat: NutrientData
@@ -61,10 +61,8 @@ struct NutrientHalfDonutChart: View {
         let totalConsumed = data.totalCaloriesConsumed
         let goal = data.totalCaloriesGoal
         
-        if totalConsumed < goal {
-            let remaining = goal - totalConsumed
-            segments.append(ChartSegment(type: nil, value: remaining, isSpacer: false, isBackground: true))
-        }
+        let remaining = max(0, goal - totalConsumed)
+        segments.append(ChartSegment(type: nil, value: remaining, isSpacer: false, isBackground: true))
         
         let maxScale = max(totalConsumed, goal)
         segments.append(ChartSegment(type: nil, value: maxScale, isSpacer: true))
@@ -73,7 +71,12 @@ struct NutrientHalfDonutChart: View {
     }
     
     private struct ChartSegment: Identifiable {
-        let id = UUID()
+        var id: String {
+            if let type = type { return type.rawValue }
+            if isBackground { return "background" } // Remaining part
+            if isSpacer { return "spacer" } // Max scale spacer
+            return UUID().uuidString
+        }
         let type: NutrientType?
         let value: Double
         var isSpacer: Bool = false
@@ -81,7 +84,7 @@ struct NutrientHalfDonutChart: View {
         
         var color: Color {
             if isSpacer { return .clear }
-            if isBackground { return .clear } // 배경은 별도 레이어로 처리하므로 투명
+            if isBackground { return .gray } // 배경은 별도 레이어로 처리하므로 투명
             return type?.color ?? .gray
         }
         
@@ -91,76 +94,31 @@ struct NutrientHalfDonutChart: View {
     }
     
     var body: some View {
-        VStack(spacing: 50) {
-            ZStack {
-                Chart {
-                    SectorMark(
-                        angle: .value("Full", 0.5),
-                        innerRadius: .ratio(0.6),
-                        outerRadius: .ratio(1.0),
-                        angularInset: 0
-                    )
-                    .foregroundStyle(Color.gray.opacity(0.2))
-                    
-                    SectorMark(
-                        angle: .value("Hidden", 0.5),
-                        innerRadius: .ratio(0.6),
-                        outerRadius: .ratio(1.0),
-                        angularInset: 0
-                    )
-                    .foregroundStyle(.clear)
-                }
-                .rotationEffect(.degrees(-90))
-                .frame(height: 200)
-
-                Chart(chartData) { segment in
-                    SectorMark(
-                        angle: .value("Calories", segment.value),
-                        innerRadius: .ratio(0.6),
-                        outerRadius: .ratio(1.0),
-                        angularInset: 0
-                    )
-                    .foregroundStyle(segment.isBackground ? .clear : segment.color)
-                }
-                .rotationEffect(.degrees(-90))
-                .frame(height: 200)
-                .mask {
-                    Circle()
-                        .trim(from: 0, to: isVisible ? 0.5 : 0)
-                        .stroke(style: StrokeStyle(lineWidth: 200, lineCap: .butt))
-                        .rotationEffect(.degrees(-180))
-                }
-                
-                VStack(spacing: 4) {
-                    Text("오늘의 섭취량")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Text("\(Int(data.totalCaloriesConsumed))")
-                        .font(.title)
-                        .bold()
-                        .foregroundColor(.primary)
-                    
-                    if data.totalCaloriesConsumed > data.totalCaloriesGoal {
-                        Text("목표 초과!")
-                            .font(.caption2)
-                            .foregroundColor(.red)
-                            .padding(.top, 2)
-                    } else {
-                        Text("목표까지 \(Int(data.totalCaloriesGoal - data.totalCaloriesConsumed)) kcal")
-                            .font(.caption2)
-                            .foregroundColor(.gray)
-                    }
-                }
-                .offset(y: 40)
-            }
-            .frame(height: 200)
+        Chart(chartData) { segment in
+            SectorMark(
+                angle: .value("Calories", segment.value),
+                innerRadius: .ratio(0.65),
+                outerRadius: .ratio(1.0)
+            )
+            .foregroundStyle(segment.color)
         }
-        .onAppear {
-            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1.0, duration: 2)) {
-                isVisible = true
-            }
+        .mask {
+            Circle()
+                .trim(from: 0, to: 1)
+                .stroke(style: StrokeStyle(lineWidth: 200, lineCap: .butt))
+                .rotationEffect(.degrees(-180))
         }
+        .animation(.timingCurve(0.2, 0.8, 0.2, 1.0, duration: 1.0), value: data)
+        .rotationEffect(.degrees(-90))
+        .frame(height: 200)
+        .overlay {
+            Text("\(Int(data.totalCaloriesGoal))")
+                .font(.title)
+                .bold()
+                .foregroundColor(.primary)
+                .padding(.bottom, 200 / 4)
+        }
+        .clipped()
     }
 }
 
@@ -171,7 +129,7 @@ struct NutrientHalfDonutChart_Previews: PreviewProvider {
             carbs: NutrientData(type: .carbohydrate, value: 150, goal: 200),
             protein: NutrientData(type: .protein, value: 80, goal: 100),
             fat: NutrientData(type: .fat, value: 40, goal: 60),
-            totalCaloriesGoal: 2000
+            totalCaloriesGoal: 2500
         )
         
         NutrientHalfDonutChart(data: sampleData)

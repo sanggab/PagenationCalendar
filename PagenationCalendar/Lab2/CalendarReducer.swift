@@ -33,6 +33,9 @@ struct CalendarReducer {
         var fat = NutrientData(type: .fat, value: 0, goal: 0)
         var totalCaloriesGoal: Double = 2500
         
+        var lists: [NutrientChartData] = []
+        var data: TDEEResult = .default
+        
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
             self.calendar.firstWeekday = 2
@@ -50,6 +53,7 @@ struct CalendarReducer {
             case scrollChanged(DayModel.ID?)
             case dayTapped(DayModel)
             case changeNutrient(NutrientType)
+            case changeList
         }
         
         @CasePathable

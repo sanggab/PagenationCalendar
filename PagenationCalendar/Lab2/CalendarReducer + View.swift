@@ -23,6 +23,23 @@ extension CalendarReducer {
             
         case .changeNutrient(let type):
             return viewChangeNutrient(&state, type: type)
+            
+        case .changeList:
+//            state.data = .init(
+//                carbohydrates: Int.random(in: 300...1000),
+//                protein: Int.random(in: 200...500),
+//                fat: Int.random(in: 100...500),
+//                sodium: 10,
+//                water: Int.random(in: 50...300),
+//                sugars: 10,
+//                dietaryFiber: 10,
+//                cholesterol: 10
+//            )
+            state.data.carbohydrates += 300
+            state.data.protein = 20
+            state.data.fat = 10
+            
+            return .none
         }
     }
 }
@@ -79,9 +96,9 @@ extension CalendarReducer {
                 // 오늘 날짜인 경우 ScrollID 저장
                 if calendar.isDateInToday(date) {
                     state.currentScrollID = model.id
+                }
+            }
         }
-    }
-}
         print("상갑 logEvent Generated dates from \(gridStartDate) to \(gridEndDate), total: \(allDates.count)")
         state.model = allDates
         

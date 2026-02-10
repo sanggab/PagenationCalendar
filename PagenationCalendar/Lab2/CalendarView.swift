@@ -20,64 +20,38 @@ struct CalendarView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Title
-            Text(store.currentTitle)
-                .font(.title2)
-                .fontWeight(.bold)
-                .frame(maxWidth: .infinity, alignment: .leading)
-//                .background(.mint)
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-//                .background(.blue)
             
-            let weekCount = store.model.count / 7
-            let fullWeeks = Array(store.model.prefix(weekCount * 7))
-            let weeks = fullWeeks.chunked(into: 7)
+            headerView
             
-            HStack(spacing: 0) {
-                ForEach(weekdays, id: \.self) { day in
-                    Text(day)
-                        .frame(width: cellWidth)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 5)
+            weekDaysView
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                VStack(spacing: 0) {
-                    LazyHStack(alignment: .top, spacing: 0) {
-                        
-                        ForEach(weeks, id: \.first?.id) { weekDays in
-                            HStack(alignment: .top, spacing: 0) {
-                                ForEach(weekDays) { model in
-                                    weekView(for: model)
-                                        .frame(width: cellWidth)
-                                }
-                            }
-                            .padding(.horizontal, 16)
-                            .frame(width: UIScreen.main.bounds.width)
-                            .id(weekDays.first?.id)
-                        }
-                    }
-                    .scrollTargetLayout()
-                    .frame(height: 50)
-                    .background(.orange)
-                    
-                }
-            }
-            .scrollTargetBehavior(.paging)
-            .defaultScrollAnchor(.trailing)
-            .scrollPosition(id: Binding(
-                get: { store.currentScrollID },
-                set: { store.send(.view(.scrollChanged($0))) }
-            ))
+            weeksView
             
-            NutrientHalfDonutChart(
-                data: DailyNutrition(
-                    carbs: store.carbs,
-                    protein: store.protein,
-                    fat: store.fat,
-                    totalCaloriesGoal: store.totalCaloriesGoal
+            
+            HalfCircleChart(
+                [
+                    NutrientChartData(
+                        type: .carbohydrate,
+                        value: store.data.carbohydrates,
+                        color: .mint
+                    ),
+                    NutrientChartData(
+                        type: .protein,
+                        value: store.data.protein,
+                        color: .orange
+                    ),
+                    NutrientChartData(
+                        type: .fat,
+                        value: store.data.fat,
+                        color: .blue
+                    ),
+                ],
+                total: 2500,
+                configuration: .init(
+                    size: CGSize(
+                        width: 200,
+                        height: 200
+                    )
                 )
             )
             
@@ -99,6 +73,12 @@ struct CalendarView: View {
                 } label: {
                     Text("지방 변화")
                 }
+                
+                Button {
+                    store.send(.view(.changeList))
+                } label: {
+                    Text("랜덤 변화")
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -106,6 +86,73 @@ struct CalendarView: View {
         .task {
             store.send(.view(.onAppear))
         }
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var weekDaysView: some View {
+        HStack(spacing: 0) {
+            ForEach(weekdays, id: \.self) { day in
+                Text(day)
+                    .frame(width: cellWidth)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 5)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var headerView: some View {
+        HStack {
+            Text(store.currentTitle)
+                .font(.title2)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 20)
+        }
+        .frame(height: 56)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var weeksView: some View {
+        let weekCount = store.model.count / 7
+        let fullWeeks = Array(store.model.prefix(weekCount * 7))
+        let weeks = fullWeeks.chunked(into: 7)
+        
+        ScrollView(.horizontal, showsIndicators: false) {
+            VStack(spacing: 0) {
+                LazyHStack(alignment: .top, spacing: 0) {
+                    
+                    ForEach(weeks, id: \.first?.id) { weekDays in
+                        HStack(alignment: .top, spacing: 0) {
+                            ForEach(weekDays) { model in
+                                weekView(for: model)
+                                    .frame(width: cellWidth)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(width: UIScreen.main.bounds.width)
+                        .id(weekDays.first?.id)
+                    }
+                }
+                .scrollTargetLayout()
+                .frame(height: 50)
+                .background(.orange)
+                
+            }
+        }
+        .scrollTargetBehavior(.paging)
+        .defaultScrollAnchor(.trailing)
+        .scrollPosition(id: Binding(
+            get: { store.currentScrollID },
+            set: { store.send(.view(.scrollChanged($0))) }
+        ))
     }
 }
 
