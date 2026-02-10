@@ -28,6 +28,11 @@ struct CalendarReducer {
         var currentTitle: String = ""
         var currentScrollID: DayModel.ID?
         
+        var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 0)
+        var protein = NutrientData(type: .protein, value: 0, goal: 0)
+        var fat = NutrientData(type: .fat, value: 0, goal: 0)
+        var totalCaloriesGoal: Double = 2500
+        
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
             self.calendar.firstWeekday = 2
@@ -44,6 +49,7 @@ struct CalendarReducer {
             case onAppear
             case scrollChanged(DayModel.ID?)
             case dayTapped(DayModel)
+            case changeNutrient(NutrientType)
         }
         
         @CasePathable

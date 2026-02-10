@@ -60,11 +60,9 @@ struct CalendarView: View {
                         }
                     }
                     .scrollTargetLayout()
-                    .frame(height: 80)
+                    .frame(height: 50)
                     .background(.orange)
                     
-//                    Rectangle()
-//                        .frame(height: 400)
                 }
             }
             .scrollTargetBehavior(.paging)
@@ -73,6 +71,35 @@ struct CalendarView: View {
                 get: { store.currentScrollID },
                 set: { store.send(.view(.scrollChanged($0))) }
             ))
+            
+            NutrientHalfDonutChart(
+                data: DailyNutrition(
+                    carbs: store.carbs,
+                    protein: store.protein,
+                    fat: store.fat,
+                    totalCaloriesGoal: store.totalCaloriesGoal
+                )
+            )
+            
+            HStack(spacing: 30) {
+                Button {
+                    store.send(.view(.changeNutrient(.carbohydrate)))
+                } label: {
+                    Text("칼로리 변화")
+                }
+
+                Button {
+                    store.send(.view(.changeNutrient(.protein)))
+                } label: {
+                    Text("단백질 변화")
+                }
+                
+                Button {
+                    store.send(.view(.changeNutrient(.fat)))
+                } label: {
+                    Text("지방 변화")
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(.gray.opacity(0.4))

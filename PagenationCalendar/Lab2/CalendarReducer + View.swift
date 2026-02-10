@@ -20,6 +20,9 @@ extension CalendarReducer {
             
         case .dayTapped(let dayModel):
             return viewDayTappedAction(&state, model: dayModel)
+            
+        case .changeNutrient(let type):
+            return viewChangeNutrient(&state, type: type)
         }
     }
 }
@@ -132,6 +135,21 @@ extension CalendarReducer {
         
         if let startDayModel = state.model.first(where: { state.calendar.isDate($0.date, inSameDayAs: startOfWeek) }) {
             state.currentScrollID = startDayModel.id
+        }
+        
+        return .none
+    }
+}
+
+extension CalendarReducer {
+    func viewChangeNutrient(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {
+        switch nutrientType {
+        case .carbohydrate:
+            state.carbs.value += 100
+        case .protein:
+            state.protein.value += 5
+        case .fat:
+            state.fat.value += 5
         }
         
         return .none
