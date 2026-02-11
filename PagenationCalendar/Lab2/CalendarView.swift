@@ -93,9 +93,12 @@ extension CalendarView {
     @ViewBuilder
     var weekDaysView: some View {
         HStack(spacing: 0) {
-            ForEach(weekdays, id: \.self) { day in
-                Text(day)
+            ForEach(weekdays.indices, id: \.self) { index in
+                Text(weekdays[index])
                     .frame(width: cellWidth)
+                    .onTapGesture {
+                        store.send(.view(.weekdayHeaderTapped(index)))
+                    }
             }
         }
         .padding(.horizontal, 16)

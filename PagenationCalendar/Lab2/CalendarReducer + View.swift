@@ -21,6 +21,9 @@ extension CalendarReducer {
         case .dayTapped(let dayModel):
             return viewDayTappedAction(&state, model: dayModel)
             
+        case .weekdayHeaderTapped(let index):
+            return viewWeekdayHeaderTapped(&state, index: index)
+            
         case .changeNutrient(let type):
             return viewChangeNutrient(&state, type: type)
             
@@ -47,7 +50,7 @@ extension CalendarReducer {
 // MARK:
 extension CalendarReducer {
     func viewOnAppearAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
-        var calendar = state.calendar
+        let calendar = state.calendar
         
         let startDateComponents = DateComponents(year: 2025, month: 1, day: 1)
         guard let startOf2025 = calendar.date(from: startDateComponents) else { return .none }
@@ -106,6 +109,29 @@ extension CalendarReducer {
         state.currentTitle = formatTitle(date: now, calendar: calendar)
         
         return .none
+    }
+}
+
+extension CalendarReducer {
+    func viewWeekdayHeaderTapped(_ state: inout CalendarReducer.State, index: Int) -> Effect<Action> {
+        // 1. 현재 보이는 주의 시작 날짜(ID)를 찾는다.
+        guard let currentScrollID = state.currentScrollID,
+              let weekStartIndex = state.model.firstIndex(where: { $0.id == currentScrollID }) else {
+            return .none
+        }
+        
+        // 2. 해당 주의 시작 인덱스 + 탭한 요일 인덱스(0...6)를 더해 타겟 날짜를 찾는다.
+        let targetIndex = weekStartIndex + index
+        
+        // 3. 인덱스가 유효한지 확인한다.
+        guard state.model.indices.contains(targetIndex) else {
+            return .none
+        }
+        
+        let targetModel = state.model[targetIndex]
+        
+        // 4. 해당 날짜를 탭한 것과 동일한 로직을 수행한다.
+        return viewDayTappedAction(&state, model: targetModel)
     }
 }
 

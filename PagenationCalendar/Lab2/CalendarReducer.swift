@@ -52,6 +52,7 @@ struct CalendarReducer {
             case onAppear
             case scrollChanged(DayModel.ID?)
             case dayTapped(DayModel)
+            case weekdayHeaderTapped(Int)
             case changeNutrient(NutrientType)
             case changeList
         }
