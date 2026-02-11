@@ -35,9 +35,6 @@ struct CalendarReducer {
         var fat = NutrientData(type: .fat, value: 0, goal: 60)
         var totalCaloriesGoal: Double = 2500
         
-        var nutrientCharDataList: [NutrientChartData] = []
-        var data: TDEEResult = .default
-        
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
             self.calendar.firstWeekday = 2

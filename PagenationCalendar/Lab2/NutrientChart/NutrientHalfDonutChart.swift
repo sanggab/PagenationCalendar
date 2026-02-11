@@ -73,8 +73,6 @@ struct NutrientHalfDonutChart: View {
     private struct ChartSegment: Identifiable {
         var id: String {
             if let type = type { return type.rawValue }
-            if isBackground { return "background" } // Remaining part
-            if isSpacer { return "spacer" } // Max scale spacer
             return UUID().uuidString
         }
         let type: NutrientType?
@@ -83,8 +81,6 @@ struct NutrientHalfDonutChart: View {
         var isBackground: Bool = false
         
         var color: Color {
-            if isSpacer { return .clear }
-            if isBackground { return .gray } // 배경은 별도 레이어로 처리하므로 투명
             return type?.color ?? .gray
         }
         
@@ -93,30 +89,29 @@ struct NutrientHalfDonutChart: View {
         }
     }
     
+    private let size = CGSize(width: 240, height: 120)
+    
     var body: some View {
         Chart(chartData) { segment in
             SectorMark(
-                angle: .value("Calories", segment.value),
+                angle: .value(segment.type?.rawValue ?? "Value", segment.value),
                 innerRadius: .ratio(0.65),
-                outerRadius: .ratio(1.0)
+                outerRadius: .ratio(1),
             )
             .foregroundStyle(segment.color)
         }
-        .mask {
-            Circle()
-                .trim(from: 0, to: 1)
-                .stroke(style: StrokeStyle(lineWidth: 200, lineCap: .butt))
-                .rotationEffect(.degrees(-180))
-        }
-        .animation(.timingCurve(0.2, 0.8, 0.2, 1.0, duration: 1.0), value: data)
+        .animation(.easeOut(duration: 0.5).delay(0.3), value: data)
         .rotationEffect(.degrees(-90))
-        .frame(height: 200)
-        .overlay {
-            Text("\(Int(data.totalCaloriesGoal))")
-                .font(.title)
-                .bold()
-                .foregroundColor(.primary)
-                .padding(.bottom, 200 / 4)
+        .aspectRatio(1.0, contentMode: .fill)
+        .frame(
+            width: size.width == 0 ? nil : size.width,
+            height: size.height == 0 ? nil : size.height,
+            alignment: .top
+        )
+        .overlay(alignment: .bottom) {
+            Text("\(data.totalCaloriesGoal)")
+                .foregroundStyle(Color(hex: "121416"))
+                .padding(.bottom, 24)
         }
         .clipped()
     }

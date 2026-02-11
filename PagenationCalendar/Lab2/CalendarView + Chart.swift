@@ -47,36 +47,12 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var chartView: some View {
-        HalfCircleChart(
-            [
-                NutrientChartData(
-                    type: .carbohydrate,
-                    value: store.carbs.value,
-                    color: Color(hex: "ffb948")
-                ),
-                
-                NutrientChartData(
-                    type: .protein,
-                    value: store.protein.value,
-                    color: Color(hex: "8c72ff")
-                ),
-                
-                NutrientChartData(
-                    type: .fat,
-                    value: store.fat.value,
-                    color: Color(hex: "18cd8c")
-                )
-            ],
-            total: 2500,
-            configuration: .init(
-                size: CGSize(
-                    width: 240,
-                    height: 120
-                ),
-                innerRadius: 0.65,
-                outerRadius: 1.0,
-                textPadding: 24, // 선 두께가 48이라 그 절반만큼 민다
-                emptyColor: Color(hex: "eff1f4")
+        NutrientHalfDonutChart(
+            data: DailyNutrition(
+                carbs: store.carbs,
+                protein: store.protein,
+                fat: store.fat,
+                totalCaloriesGoal: store.totalCaloriesGoal
             )
         )
     }
@@ -109,13 +85,11 @@ extension CalendarView {
     @ViewBuilder
     var nutrientAnalysisView: some View {
         HStack(spacing: 0) {
-            ForEach(HalfCircleNutrientType.allCases, id: \.self) { nutrient in
+            ForEach(NutrientType.allCases, id: \.self) { nutrient in
                 // TODO: Replace with actual nutrient analysis content
                 // Placeholder content to avoid empty closure warnings
                 
                 
-                nutrient.image
-                    .frame(height: 85)
             }
         }
         .frame(maxWidth: .infinity)

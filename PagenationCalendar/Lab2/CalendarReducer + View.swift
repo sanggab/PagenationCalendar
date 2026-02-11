@@ -40,7 +40,7 @@ extension CalendarReducer {
 //            )
             state.carbs.value += 50
             state.protein.value += 5
-            state.data.fat += 5
+            state.fat.value += 3
             
             return .none
         }
