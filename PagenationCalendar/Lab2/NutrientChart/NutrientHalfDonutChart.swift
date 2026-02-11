@@ -17,6 +17,17 @@ enum NutrientType: String, CaseIterable, Identifiable, Equatable {
         case .fat: return Color.orange
         }
     }
+    
+    var image: Image {
+        switch self {
+        case .carbohydrate:
+            Image("icon-carb")
+        case .protein:
+            Image("icon-pro")
+        case .fat:
+            Image("icon-fat")
+        }
+    }
 }
 
 struct NutrientData: Identifiable, Equatable {
@@ -27,9 +38,10 @@ struct NutrientData: Identifiable, Equatable {
     
     // Helper for calories (approximate: C=4, P=4, F=9)
     var calories: Double {
+        let roundedValue = value.rounded()
         switch type {
-        case .carbohydrate, .protein: return value * 4
-        case .fat: return value * 9
+        case .carbohydrate, .protein: return roundedValue * 4
+        case .fat: return roundedValue * 9
         }
     }
 }
@@ -81,7 +93,7 @@ struct NutrientHalfDonutChart: View {
         var isBackground: Bool = false
         
         var color: Color {
-            return type?.color ?? .gray
+            return type?.color ?? Color(hex: "eff1f4")
         }
         
         var label: String {
@@ -109,9 +121,11 @@ struct NutrientHalfDonutChart: View {
             alignment: .top
         )
         .overlay(alignment: .bottom) {
-            Text("\(data.totalCaloriesGoal)")
+            Text("\(Int(data.totalCaloriesGoal))")
+                .font(.system(size: 34, weight: .bold))
+                .frame(height: 48)
                 .foregroundStyle(Color(hex: "121416"))
-                .padding(.bottom, 24)
+//                .padding(.bottom, 0) // TODO: bottom padding 구하는 공식 찾기
         }
         .clipped()
     }

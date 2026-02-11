@@ -12,8 +12,8 @@ import ComposableArchitecture
 struct CalendarView: View {
     var store: StoreOf<CalendarReducer>
     
-    private var cellWidth: CGFloat {
-        (UIScreen.main.bounds.width - 32) / 7
+    var cellWidth: CGFloat {
+        (UIScreen.main.bounds.width - 32)
     }
     
     
@@ -23,13 +23,13 @@ struct CalendarView: View {
             headerView
             
             Rectangle()
-                .fill(.mint)
+                .fill(.clear)
                 .frame(height: 4)
             
             calendarView
-            
+//            
 //            Rectangle()
-//                .fill(.mint)
+//                .fill(.clear)
 //                .frame(height: 16)
             
             contentView
@@ -50,8 +50,7 @@ extension CalendarView {
     var headerView: some View {
         HStack {
             Text(store.currentTitle)
-                .font(.title2)
-                .fontWeight(.bold)
+                .font(.system(size: 22, weight: .semibold))
                 .foregroundStyle(Color(hex: "222529"))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 20)
@@ -77,9 +76,9 @@ extension CalendarView {
         HStack(spacing: 0) {
             ForEach(store.weekdays.indices, id: \.self) { index in
                 Text(store.weekdays[index])
-                    .font(.system(size: 14, weight: .regular))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Color(hex: "6e7881"))
-                    .frame(width: cellWidth)
+                    .frame(width: cellWidth / 7)
                     .onTapGesture {
                         store.send(.view(.weekdayHeaderTapped(index)))
                     }
@@ -101,7 +100,7 @@ extension CalendarView {
                         HStack(alignment: .top, spacing: 0) {
                             ForEach(weekDays) { model in
                                 weekView(for: model)
-                                    .frame(width: cellWidth)
+                                    .frame(width: cellWidth / 7)
                             }
                         }
                         .padding(.horizontal, 16)
@@ -126,6 +125,7 @@ extension CalendarView {
     func weekView(for model: DayModel) -> some View {
         VStack(spacing: 6) {
             Text(model.dayString)
+                .font(.system(size: 13, weight: .semibold))
                 .frame(width: 28, height: 28)
                 .foregroundStyle(isForegrounsStyleColor(for: model))
                 .background(Circle().fill(isBackgroundColor(for: model)))
@@ -152,7 +152,7 @@ extension CalendarView {
             dailyHealthDashBoard
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.orange)
+//        .background(.orange)
     }
 }
 
@@ -164,8 +164,8 @@ extension CalendarView {
             
 //            pageNationView
         }
-        .frame(height: 360)
-        .background(.blue)
+        .padding(.top, 16)
+//        .frame(height: 360)
     }
 }
 
@@ -183,7 +183,7 @@ extension CalendarView {
         }
         .scrollTargetBehavior(.paging)
         .frame(maxWidth: .infinity)
-        .background(Color(hex: "ffffff"))
+        .background(.orange)
     }
     
     @ViewBuilder
