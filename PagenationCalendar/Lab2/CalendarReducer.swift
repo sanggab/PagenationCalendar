@@ -28,6 +28,8 @@ struct CalendarReducer {
         var currentTitle: String = ""
         var currentScrollID: DayModel.ID?
         
+        var weekdays: [String] = []
+        
         var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 0)
         var protein = NutrientData(type: .protein, value: 0, goal: 0)
         var fat = NutrientData(type: .fat, value: 0, goal: 0)

@@ -52,6 +52,12 @@ extension CalendarReducer {
     func viewOnAppearAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
         let calendar = state.calendar
         
+        // 요일 심볼 설정 (예: "일", "월", "화" ...)
+        let symbols = calendar.shortStandaloneWeekdaySymbols
+        let firstWeekdayIndex = calendar.firstWeekday - 1 // 1-based to 0-based
+        let shiftedSymbols = Array(symbols[firstWeekdayIndex...] + symbols[..<firstWeekdayIndex])
+        state.weekdays = shiftedSymbols
+        
         let startDateComponents = DateComponents(year: 2025, month: 1, day: 1)
         guard let startOf2025 = calendar.date(from: startDateComponents) else { return .none }
         

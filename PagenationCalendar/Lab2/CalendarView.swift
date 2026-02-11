@@ -16,10 +16,11 @@ struct CalendarView: View {
         (UIScreen.main.bounds.width - 32) / 7
     }
     
-    private let weekdays = ["월", "화", "수", "목", "금", "토", "일"]
     
+    // MARK: - View
     var body: some View {
-        VStack(spacing: 0) {
+        WithPerceptionTracking {
+            VStack(spacing: 0) {
             
             headerView
             
@@ -86,6 +87,7 @@ struct CalendarView: View {
         .task {
             store.send(.view(.onAppear))
         }
+        }
     }
 }
 
@@ -93,9 +95,11 @@ extension CalendarView {
     @ViewBuilder
     var weekDaysView: some View {
         HStack(spacing: 0) {
-            ForEach(weekdays.indices, id: \.self) { index in
-                Text(weekdays[index])
-                    .frame(width: cellWidth)
+            ForEach(store.weekdays.indices, id: \.self) { index in
+                Text(store.weekdays[index])
+                    .font(.system(size: 13, weight: .regular))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 16)
                     .onTapGesture {
                         store.send(.view(.weekdayHeaderTapped(index)))
                     }
