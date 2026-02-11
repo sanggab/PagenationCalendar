@@ -38,9 +38,9 @@ extension CalendarReducer {
 //                dietaryFiber: 10,
 //                cholesterol: 10
 //            )
-            state.data.carbohydrates += 300
-            state.data.protein = 20
-            state.data.fat = 10
+            state.carbs.value += 50
+            state.protein.value += 5
+            state.data.fat += 5
             
             return .none
         }
@@ -108,7 +108,7 @@ extension CalendarReducer {
                 }
             }
         }
-        print("상갑 logEvent Generated dates from \(gridStartDate) to \(gridEndDate), total: \(allDates.count)")
+//        print("상갑 logEvent Generated dates from \(gridStartDate) to \(gridEndDate), total: \(allDates.count)")
         state.model = allDates
         
         // 타이틀 설정 (오늘 날짜 기준)

@@ -30,12 +30,12 @@ struct CalendarReducer {
         
         var weekdays: [String] = []
         
-        var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 0)
-        var protein = NutrientData(type: .protein, value: 0, goal: 0)
-        var fat = NutrientData(type: .fat, value: 0, goal: 0)
+        var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 1000)
+        var protein = NutrientData(type: .protein, value: 0, goal: 140)
+        var fat = NutrientData(type: .fat, value: 0, goal: 60)
         var totalCaloriesGoal: Double = 2500
         
-        var lists: [NutrientChartData] = []
+        var nutrientCharDataList: [NutrientChartData] = []
         var data: TDEEResult = .default
         
         public init() {

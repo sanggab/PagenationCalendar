@@ -52,7 +52,7 @@ struct TDEEResult: Equatable {
 struct NutrientChartData: Identifiable, Equatable {
     let id = UUID()
     let type: HalfCircleNutrientType?
-    let value: Int
+    let value: Double
     let color: Color
     
     var calories: Double {
@@ -65,7 +65,7 @@ struct NutrientChartData: Identifiable, Equatable {
     
     init(
         type: HalfCircleNutrientType? = nil,
-        value: Int,
+        value: Double,
         color: Color
     ) {
 //        self.label = label
@@ -112,12 +112,12 @@ struct HalfCircleChart: View {
         
         if let targetTotal {
             let remaining = max(0, Double(targetTotal) - currentTotal)
-            copiedData.append(NutrientChartData(value: Int(remaining), color: configuration.emptyColor ?? .gray.opacity(0.1)))
+            copiedData.append(NutrientChartData(value: Double(Int(remaining)), color: configuration.emptyColor ?? .gray.opacity(0.1)))
             
             let bottomDummy = max(Double(targetTotal), currentTotal)
-            copiedData.append(NutrientChartData(value: Int(bottomDummy), color: .clear))
+            copiedData.append(NutrientChartData(value: Double(Int(bottomDummy)), color: .clear))
         } else {
-            copiedData.append(NutrientChartData(value: Int(currentTotal), color: .clear))
+            copiedData.append(NutrientChartData(value: Double(Int(currentTotal)), color: .clear))
         }
         
         return copiedData
@@ -244,20 +244,20 @@ struct TDEEResultView: View {
             
             HalfCircleChart(
                 [
-                    NutrientChartData(type: .carbohydrate, value: data.carbohydrates, color: .blue),
-                    NutrientChartData(type: .protein, value: data.protein, color: .green),
-                    NutrientChartData(type: .fat, value: data.fat, color: .orange),
-                    NutrientChartData(value: data.water, color: .purple),
+                    NutrientChartData(type: .carbohydrate, value: Double(data.carbohydrates), color: .blue),
+                    NutrientChartData(type: .protein, value: Double(data.protein), color: .green),
+                    NutrientChartData(type: .fat, value: Double(data.fat), color: .orange),
+                    NutrientChartData(value: Double(data.water), color: .purple),
                 ],
                 total: maxTarget
             )
             
             HalfCircleChart(
                 [
-                    NutrientChartData(type: .carbohydrate, value: data.carbohydrates, color: .blue),
-                    NutrientChartData(type: .protein, value: data.protein, color: .green),
-                    NutrientChartData(type: .fat, value: data.fat, color: .orange),
-                    NutrientChartData(value: data.water, color: .purple),
+                    NutrientChartData(type: .carbohydrate, value: Double(data.carbohydrates), color: .blue),
+                    NutrientChartData(type: .protein, value: Double(data.protein), color: .green),
+                    NutrientChartData(type: .fat, value: Double(data.fat), color: .orange),
+                    NutrientChartData(value: Double(data.water), color: .purple),
                 ],
                 total: maxTarget
             )
@@ -265,10 +265,10 @@ struct TDEEResultView: View {
             
             HalfCircleChart(
                 [
-                    NutrientChartData(type: .carbohydrate, value: data.carbohydrates, color: .blue),
-                    NutrientChartData(type: .protein, value: data.protein, color: .green),
-                    NutrientChartData(type: .fat, value: data.fat, color: .orange),
-                    NutrientChartData(value: data.water, color: .purple),
+                    NutrientChartData(type: .carbohydrate, value: Double(data.carbohydrates), color: .blue),
+                    NutrientChartData(type: .protein, value: Double(data.protein), color: .green),
+                    NutrientChartData(type: .fat, value: Double(data.fat), color: .orange),
+                    NutrientChartData(value: Double(data.water), color: .purple),
                 ],
                 total: maxTarget,
                 configuration: HalfCircleChartConfiguration(

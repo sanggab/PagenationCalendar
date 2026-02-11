@@ -162,7 +162,7 @@ extension CalendarView {
         VStack(spacing: 0) {
             infinityScrollView
             
-            pageNationView
+//            pageNationView
         }
         .frame(height: 360)
         .background(.blue)

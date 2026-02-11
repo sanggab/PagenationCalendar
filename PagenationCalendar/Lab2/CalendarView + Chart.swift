@@ -51,19 +51,19 @@ extension CalendarView {
             [
                 NutrientChartData(
                     type: .carbohydrate,
-                    value: store.data.carbohydrates,
+                    value: store.carbs.value,
                     color: Color(hex: "ffb948")
                 ),
                 
                 NutrientChartData(
                     type: .protein,
-                    value: store.data.protein,
+                    value: store.protein.value,
                     color: Color(hex: "8c72ff")
                 ),
                 
                 NutrientChartData(
                     type: .fat,
-                    value: store.data.fat,
+                    value: store.fat.value,
                     color: Color(hex: "18cd8c")
                 )
             ],
@@ -113,7 +113,15 @@ extension CalendarView {
                 // TODO: Replace with actual nutrient analysis content
                 // Placeholder content to avoid empty closure warnings
                 
+                
+                nutrient.image
+                    .frame(height: 85)
             }
         }
+        .frame(maxWidth: .infinity)
+        .background(.mint)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .padding(.horizontal, 16)
+        .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
     }
 }
