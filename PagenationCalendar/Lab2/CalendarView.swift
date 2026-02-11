@@ -174,7 +174,7 @@ extension CalendarView {
     var infinityScrollView: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 0) {
-                chartView
+                nutrientDashboardCard
                 
 //                nutrientDetailView
 //                
@@ -191,45 +191,6 @@ extension CalendarView {
         Rectangle()
             .fill(.mint)
             .frame(width: 30, height: 6)
-    }
-}
-
-extension CalendarView {
-    @ViewBuilder
-    var chartView: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color(hex: "ffb948"))
-            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
-            .overlay(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("일일 권장 칼로리")
-                        .foregroundStyle(Color(hex: "41474e"))
-                    
-                    
-                    HStack(spacing: 0) {
-                        Text("어떤 음식을 드셨나요?")
-                            .padding(.leading, 16)
-                        
-                        Spacer()
-                        
-                        Rectangle()
-                            .fill(Color(hex: "c6ccd2"))
-                            .aspectRatio(contentMode: .fit)
-                            .padding(.vertical, 2)
-                            .padding(.trailing, 12)
-                    }
-                    .frame(height: 48)
-                    .frame(maxWidth: .infinity)
-                    .background(Color(hex: "f8f9fa"))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "eff1f4")))
-
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .padding(.all, 16)
-            }
-            .padding(.horizontal, 16)
-            .containerRelativeFrame(.horizontal)
     }
 }
 

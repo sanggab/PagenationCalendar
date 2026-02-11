@@ -1,21 +1,21 @@
 import SwiftUI
 import Charts
 
-//enum NutrientType: String, CaseIterable, Identifiable, Equatable {
-//    case carbohydrate = "탄수화물"
-//    case protein = "단백질"
-//    case fat = "지방"
-//    
-//    var id: String { self.rawValue }
-//    
-//    var color: Color {
-//        switch self {
-//        case .carbohydrate: return Color.blue
-//        case .protein: return Color.purple
-//        case .fat: return Color.orange
-//        }
-//    }
-//}
+enum HalfCircleNutrientType: String, CaseIterable, Identifiable, Equatable {
+    case carbohydrate = "탄수화물"
+    case protein = "단백질"
+    case fat = "지방"
+    
+    var id: String { self.rawValue }
+    
+    var color: Color {
+        switch self {
+        case .carbohydrate: return Color.blue
+        case .protein: return Color.purple
+        case .fat: return Color.orange
+        }
+    }
+}
 
 struct TDEEResult: Equatable {
     static let `default` = TDEEResult(
@@ -40,7 +40,7 @@ struct TDEEResult: Equatable {
 
 struct NutrientChartData: Identifiable, Equatable {
     let id = UUID()
-    let type: NutrientType?
+    let type: HalfCircleNutrientType?
     let value: Int
     let color: Color
     
@@ -53,7 +53,7 @@ struct NutrientChartData: Identifiable, Equatable {
     }
     
     init(
-        type: NutrientType? = nil,
+        type: HalfCircleNutrientType? = nil,
         value: Int,
         color: Color
     ) {
@@ -61,6 +61,12 @@ struct NutrientChartData: Identifiable, Equatable {
         self.type = type
         self.value = value
         self.color = color
+    }
+    
+    static func == (lhs: NutrientChartData, rhs: NutrientChartData) -> Bool {
+        return lhs.id == rhs.id &&
+               lhs.type == rhs.type &&
+               lhs.value == rhs.value
     }
 }
 
@@ -91,8 +97,7 @@ struct HalfCircleChart: View {
     var chartData: [NutrientChartData] {
         var copiedData = self.data
         let currentTotal = copiedData.reduce(0.0) { $0 + $1.calories }
-        print("상갑 logEvent \(#function) currentTotal \(currentTotal)")
-        print("상갑 logEvent \(#function) copiedData \(copiedData)")
+        
         if let targetTotal {
             let remaining = max(0, Double(targetTotal) - currentTotal)
             copiedData.append(NutrientChartData(value: Int(remaining), color: .gray.opacity(0.1)))
@@ -135,17 +140,18 @@ struct HalfCircleChart: View {
         }
         .animation(.easeOut(duration: 0.5).delay(0.3), value: data)
         .rotationEffect(.degrees(-90))
+        .aspectRatio(1.0, contentMode: .fill)
         .frame(
             width: width == 0 ? nil : width,
-            height: height == 0 ? nil : height
+            height: height == 0 ? nil : height,
+            alignment: .top
         )
-        .overlay {
+        .overlay(alignment: .bottom) {
             if let targetTotal {
                 Text("\(targetTotal)")
                     .padding(.bottom, textPadding)
             }
         }
-        .offset(y: height / 4)
         .clipped()
     }
 }
