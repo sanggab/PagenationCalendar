@@ -19,94 +19,29 @@ struct CalendarView: View {
     
     // MARK: - View
     var body: some View {
-        WithPerceptionTracking {
-            VStack(spacing: 0) {
-            
+        VStack(spacing: 0) {
             headerView
             
-            weekDaysView
+            Rectangle()
+                .fill(.mint)
+                .frame(height: 4)
             
-            weeksView
+            calendarView
             
+//            Rectangle()
+//                .fill(.mint)
+//                .frame(height: 16)
             
-            HalfCircleChart(
-                [
-                    NutrientChartData(
-                        type: .carbohydrate,
-                        value: store.data.carbohydrates,
-                        color: .mint
-                    ),
-                    NutrientChartData(
-                        type: .protein,
-                        value: store.data.protein,
-                        color: .orange
-                    ),
-                    NutrientChartData(
-                        type: .fat,
-                        value: store.data.fat,
-                        color: .blue
-                    ),
-                ],
-                total: 2500,
-                configuration: .init(
-                    size: CGSize(
-                        width: 200,
-                        height: 200
-                    )
-                )
-            )
+            contentView
             
-            HStack(spacing: 30) {
-                Button {
-                    store.send(.view(.changeNutrient(.carbohydrate)))
-                } label: {
-                    Text("칼로리 변화")
-                }
-
-                Button {
-                    store.send(.view(.changeNutrient(.protein)))
-                } label: {
-                    Text("단백질 변화")
-                }
-                
-                Button {
-                    store.send(.view(.changeNutrient(.fat)))
-                } label: {
-                    Text("지방 변화")
-                }
-                
-                Button {
-                    store.send(.view(.changeList))
-                } label: {
-                    Text("랜덤 변화")
-                }
-            }
+            Spacer()
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(.gray.opacity(0.4))
+        .background(Color(hex: "f8f9fa"))
         .task {
             store.send(.view(.onAppear))
         }
-        }
-    }
-}
-
-extension CalendarView {
-    @ViewBuilder
-    var weekDaysView: some View {
-        HStack(spacing: 0) {
-            ForEach(store.weekdays.indices, id: \.self) { index in
-                Text(store.weekdays[index])
-                    .font(.system(size: 13, weight: .regular))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 16)
-                    .onTapGesture {
-                        store.send(.view(.weekdayHeaderTapped(index)))
-                    }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 5)
     }
 }
 
@@ -117,6 +52,7 @@ extension CalendarView {
             Text(store.currentTitle)
                 .font(.title2)
                 .fontWeight(.bold)
+                .foregroundStyle(Color(hex: "222529"))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 20)
         }
@@ -126,6 +62,31 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    @ViewBuilder
+    var calendarView: some View {
+        VStack(spacing: 2) {
+            weekDaysView
+            
+            weeksView
+        }
+        .frame(height: 64)
+    }
+    
+    @ViewBuilder
+    var weekDaysView: some View {
+        HStack(spacing: 0) {
+            ForEach(store.weekdays.indices, id: \.self) { index in
+                Text(store.weekdays[index])
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundStyle(Color(hex: "6e7881"))
+                    .frame(width: cellWidth)
+                    .onTapGesture {
+                        store.send(.view(.weekdayHeaderTapped(index)))
+                    }
+            }
+        }
+    }
+    
     @ViewBuilder
     var weeksView: some View {
         let weekCount = store.model.count / 7
@@ -149,9 +110,6 @@ extension CalendarView {
                     }
                 }
                 .scrollTargetLayout()
-                .frame(height: 50)
-                .background(.orange)
-                
             }
         }
         .scrollTargetBehavior(.paging)
@@ -166,17 +124,16 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     func weekView(for model: DayModel) -> some View {
-        VStack(spacing: 2) {
-            
+        VStack(spacing: 6) {
             Text(model.dayString)
                 .frame(width: 28, height: 28)
+                .foregroundStyle(isForegrounsStyleColor(for: model))
                 .background(Circle().fill(isBackgroundColor(for: model)))
             
-            if model.isSelected || model.isWritted {
+            if model.isSelected || model.isWritted && !model.isFuture {
                 Circle()
-                    .fill(model.isSelected ? .black : .red)
+                    .fill(model.isSelected ? Color(hex: "41474e") : Color(hex: "f58a7c"))
                     .frame(width: 4, height: 4)
-                    .padding(.top, 10)
             }
         }
         .id(model.id)
@@ -185,6 +142,116 @@ extension CalendarView {
                 store.send(.view(.dayTapped(model)))
             }
         }
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var contentView: some View {
+        ScrollView(.vertical) {
+            dailyHealthDashBoard
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.orange)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var dailyHealthDashBoard: some View {
+        VStack(spacing: 0) {
+            infinityScrollView
+            
+            pageNationView
+        }
+        .frame(height: 360)
+        .background(.blue)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var infinityScrollView: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 0) {
+                chartView
+                
+//                nutrientDetailView
+//                
+//                hydrationTrackerView
+            }
+        }
+        .scrollTargetBehavior(.paging)
+        .frame(maxWidth: .infinity)
+        .background(Color(hex: "ffffff"))
+    }
+    
+    @ViewBuilder
+    var pageNationView: some View {
+        Rectangle()
+            .fill(.mint)
+            .frame(width: 30, height: 6)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var chartView: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(Color(hex: "ffb948"))
+            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
+            .overlay(alignment: .topLeading) {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("일일 권장 칼로리")
+                        .foregroundStyle(Color(hex: "41474e"))
+                    
+                    
+                    HStack(spacing: 0) {
+                        Text("어떤 음식을 드셨나요?")
+                            .padding(.leading, 16)
+                        
+                        Spacer()
+                        
+                        Rectangle()
+                            .fill(Color(hex: "c6ccd2"))
+                            .aspectRatio(contentMode: .fit)
+                            .padding(.vertical, 2)
+                            .padding(.trailing, 12)
+                    }
+                    .frame(height: 48)
+                    .frame(maxWidth: .infinity)
+                    .background(Color(hex: "f8f9fa"))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "eff1f4")))
+
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(.all, 16)
+            }
+            .padding(.horizontal, 16)
+            .containerRelativeFrame(.horizontal)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var nutrientDetailView: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(Color(hex: "8c72ff"))
+            .padding(.horizontal, 16)
+            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
+            .containerRelativeFrame(.horizontal)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var hydrationTrackerView: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(Color(hex: "18cd8c"))
+            .padding(.horizontal, 16)
+            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
+            .containerRelativeFrame(.horizontal)
     }
 }
 
@@ -198,11 +265,21 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    func isForegrounsStyleColor(for model: DayModel) -> Color {
+        if model.isSelected {
+            return Color(hex: "ffffff")
+        } else if model.isWritted {
+            return Color(hex: "2d3238")
+        } else {
+            return Color(hex: "6e7881")
+        }
+    }
+    
     func isBackgroundColor(for model: DayModel) -> Color {
         if model.isFuture {
-            return Color.gray
+            return Color(hex: "eff1f4")
         } else {
-            return model.isSelected ? Color.mint : Color.blue
+            return model.isSelected ? Color(hex: "2d3238") : Color(hex: "eff1f4")
         }
     }
 }

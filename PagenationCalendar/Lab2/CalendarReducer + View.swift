@@ -98,7 +98,7 @@ extension CalendarReducer {
                     isToday: calendar.isDateInToday(date),
                     isSelected: calendar.isDate(date, inSameDayAs: now),
                     isFuture: date.isFuture,
-                    isWritted: Bool.random()
+                    isWritted: date.isFuture ? false : Bool.random()
                 )
                 allDates.append(model)
                 
@@ -157,9 +157,9 @@ extension CalendarReducer {
         formatter.locale = Locale(identifier: "ko_KR")
         
         if currentYear == targetYear {
-            formatter.dateFormat = "M. d"
+            formatter.dateFormat = "M. d (E)"
         } else {
-            formatter.dateFormat = "yy. M. d"
+            formatter.dateFormat = "yy. M. d (E)"
         }
         
         return formatter.string(from: date)
