@@ -15,6 +15,17 @@ enum HalfCircleNutrientType: String, CaseIterable, Identifiable, Equatable {
         case .fat: return Color.orange
         }
     }
+    
+    var image: Image {
+        switch self {
+        case .carbohydrate:
+            return Image("icon-carb")
+        case .protein:
+            return Image("icon-pro")
+        case .fat:
+            return Image("icon-fat")
+        }
+    }
 }
 
 struct TDEEResult: Equatable {
@@ -76,6 +87,7 @@ struct HalfCircleChartConfiguration {
     var innerRadius: CGFloat? = nil
     var outerRadius: CGFloat? = nil
     var textPadding: CGFloat? = nil
+    var emptyColor: Color? = nil
 }
 
 struct HalfCircleChart: View {
@@ -100,7 +112,7 @@ struct HalfCircleChart: View {
         
         if let targetTotal {
             let remaining = max(0, Double(targetTotal) - currentTotal)
-            copiedData.append(NutrientChartData(value: Int(remaining), color: .gray.opacity(0.1)))
+            copiedData.append(NutrientChartData(value: Int(remaining), color: configuration.emptyColor ?? .gray.opacity(0.1)))
             
             let bottomDummy = max(Double(targetTotal), currentTotal)
             copiedData.append(NutrientChartData(value: Int(bottomDummy), color: .clear))
@@ -149,6 +161,7 @@ struct HalfCircleChart: View {
         .overlay(alignment: .bottom) {
             if let targetTotal {
                 Text("\(targetTotal)")
+                    .foregroundStyle(Color(hex: "121416"))
                     .padding(.bottom, textPadding)
             }
         }
@@ -259,10 +272,10 @@ struct TDEEResultView: View {
                 ],
                 total: maxTarget,
                 configuration: HalfCircleChartConfiguration(
-                    size: CGSize(width: .zero, height: 150),
-                    innerRadius: 0.7,
-                    outerRadius: 0.8,
-                    textPadding: 40
+                    size: CGSize(width: 240, height: 120),
+                    innerRadius: 0.65,
+                    outerRadius: 1,
+                    textPadding: 24
                 )
             )
             

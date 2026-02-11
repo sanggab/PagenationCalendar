@@ -25,25 +25,10 @@ extension CalendarView {
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .padding(.horizontal, 16)
             .containerRelativeFrame(.horizontal)
-            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
+            .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
             
-            HStack(spacing: 0) {
-                
-            }
+            nutrientAnalysisView
         }
-        
-//        RoundedRectangle(cornerRadius: 16)
-//            .fill(.white)
-//            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
-//            .overlay(alignment: .topLeading) {
-//                VStack(alignment: .center, spacing: 20) {
-//                    
-//                    
-//                }
-//                .padding(.all, 16)
-//            }
-//            .padding(.horizontal, 16)
-//            .containerRelativeFrame(.horizontal)
     }
 }
 
@@ -51,7 +36,7 @@ extension CalendarView {
     @ViewBuilder
     var dailyCalorieGoal: some View {
         HStack(spacing: 0) {
-            Text("일일 권장 칼로리")
+            Text("일일 권장 kcal")
                 .foregroundStyle(Color(hex: "41474e"))
             
             Spacer()
@@ -90,7 +75,8 @@ extension CalendarView {
                 ),
                 innerRadius: 0.65,
                 outerRadius: 1.0,
-                textPadding: 120 / 4
+                textPadding: 24, // 선 두께가 48이라 그 절반만큼 민다
+                emptyColor: Color(hex: "eff1f4")
             )
         )
     }
@@ -116,5 +102,18 @@ extension CalendarView {
         .background(Color(hex: "f8f9fa"))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "eff1f4")))
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var nutrientAnalysisView: some View {
+        HStack(spacing: 0) {
+            ForEach(HalfCircleNutrientType.allCases, id: \.self) { nutrient in
+                // TODO: Replace with actual nutrient analysis content
+                // Placeholder content to avoid empty closure warnings
+                
+            }
+        }
     }
 }
