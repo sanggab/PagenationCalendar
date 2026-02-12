@@ -177,7 +177,7 @@ extension CalendarView {
                 nutrientDashboardCard
                     .padding(.bottom, 4)
                 
-//                nutrientDetailView
+                nutrientDetailView
 //                
 //                hydrationTrackerView
             }

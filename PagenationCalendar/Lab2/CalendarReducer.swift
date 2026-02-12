@@ -30,9 +30,9 @@ struct CalendarReducer {
         
         var weekdays: [String] = []
         
-        var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 1000)
-        var protein = NutrientData(type: .protein, value: 0, goal: 140)
-        var fat = NutrientData(type: .fat, value: 0, goal: 60)
+        var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 300)
+        var protein = NutrientData(type: .protein, value: 0, goal: 120)
+        var fat = NutrientData(type: .fat, value: 0, goal: 50)
         var totalCaloriesGoal: Double = 2500
         
         public init() {
@@ -53,7 +53,6 @@ struct CalendarReducer {
             case dayTapped(DayModel)
             case weekdayHeaderTapped(Int)
             case changeNutrient(NutrientType)
-            case changeList
         }
         
         @CasePathable

@@ -101,34 +101,7 @@ extension CalendarView {
     var nutrientAnalysisView: some View {
         HStack(spacing: 0) {
             ForEach(Array(NutrientType.allCases.enumerated()), id: \.element) { (index, nutrient) in
-                // TODO: Replace with actual nutrient analysis content
-                // Placeholder content to avoid empty closure warnings
-                VStack(spacing: 2) {
-                    HStack(spacing: 4) {
-                        nutrient.image
-                        
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color(hex: "eff1f4"))
-                            .frame(width: 29, height: 20)
-                            .overlay {
-                                Text("적정")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(Color(hex: "197dc4"))
-                            }
-                    }
-                    
-                    nutrientStatusView(nutrient)
-                        .frame(height: 25)
-                }
-                .containerRelativeFrame(.horizontal) { length, axis in
-                    switch axis {
-                    case .horizontal:
-                        return (length - 24 - 32 - 2) / 3
-                    case .vertical:
-                        return 53
-                    }
-                }
-                .background(.pink)
+                nutrientEvaluationCell(type: nutrient)
                 
                 let count = NutrientType.allCases.count - 1
                 
@@ -148,36 +121,100 @@ extension CalendarView {
     }
     
     @ViewBuilder
-    func nutrientStatusView(_ type: NutrientType) -> some View {
+    func nutrientEvaluationCell(type nutrient: NutrientType) -> some View{
+        VStack(spacing: 2) {
+            HStack(spacing: 4) {
+                nutrient.image
+                
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(hex: "eff1f4"))
+                    .frame(width: 29, height: 20)
+                    .overlay {
+                        Text("적정")
+                            .font(.system(size: 12))
+                            .foregroundStyle(Color(hex: "197dc4"))
+                    }
+            }
+            
+            nutrientStatusView(type: nutrient)
+                .frame(height: 25)
+        }
+        .containerRelativeFrame(.horizontal) { length, axis in
+            switch axis {
+            case .horizontal:
+                // 32는 safeArea에서 horizontal 16 패딩 값
+                // 24는 nutrientAnalysisView horizontal 좌우 12 패딩 값
+                // width 1인 Divider 2개 값
+                return (length - 24 - 32 - 2) / 3
+            case .vertical:
+                return 53
+            }
+        }
+        .onTapGesture {
+            store.send(.view(.changeNutrient(nutrient)))
+        }
+        .background(.pink)
+    }
+    
+    @ViewBuilder
+    func nutrientStatusView(type nutrient: NutrientType) -> some View {
         HStack(spacing: 4) {
-            switch type {
+            switch nutrient {
             case .carbohydrate:
                 Text("\(Int(store.carbs.value.rounded()))")
+                    .contentTransition(.numericText(value: store.carbs.value))
+                    .animation(.linear, value: store.carbs.value)
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(Color(hex: "2d3238"))
                 
                 Text("/ \(Int(store.carbs.goal))")
+                    .contentTransition(.numericText(value: store.carbs.goal))
+                    .animation(.linear, value: store.carbs.goal)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Color(hex: "6e7881"))
                 
             case .protein:
                 Text("\(Int(store.protein.value.rounded()))")
+                    .contentTransition(.numericText(value: store.protein.value))
+                    .animation(.linear, value: store.protein.value)
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(Color(hex: "2d3238"))
                 
                 Text("/ \(Int(store.protein.goal))")
+                    .contentTransition(.numericText(value: store.protein.goal))
+                    .animation(.linear, value: store.protein.goal)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Color(hex: "6e7881"))
                 
             case .fat:
                 Text("\(Int(store.fat.value.rounded()))")
+                    .contentTransition(.numericText(value: store.fat.value))
+                    .animation(.linear, value: store.fat.value)
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(Color(hex: "2d3238"))
                 
                 Text("/ \(Int(store.fat.goal))")
+                    .contentTransition(.numericText(value: store.fat.goal))
+                    .animation(.linear, value: store.fat.goal)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(Color(hex: "6e7881"))
             }
+        }
+    }
+    
+    func evaluateNutrientStatus(type nutrient: NutrientType) -> String {
+        switch nutrient {
+        case .carbohydrate:
+            let value: Double = store.carbs.value
+            let goal: Double = store.carbs.goal
+            
+            
+            
+            return ""
+        case .protein:
+            return ""
+        case .fat:
+            return ""
         }
     }
 }

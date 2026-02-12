@@ -26,23 +26,6 @@ extension CalendarReducer {
             
         case .changeNutrient(let type):
             return viewChangeNutrient(&state, type: type)
-            
-        case .changeList:
-//            state.data = .init(
-//                carbohydrates: Int.random(in: 300...1000),
-//                protein: Int.random(in: 200...500),
-//                fat: Int.random(in: 100...500),
-//                sodium: 10,
-//                water: Int.random(in: 50...300),
-//                sugars: 10,
-//                dietaryFiber: 10,
-//                cholesterol: 10
-//            )
-            state.carbs.value += 50
-            state.protein.value += 5
-            state.fat.value += 3
-            
-            return .none
         }
     }
 }
@@ -194,7 +177,7 @@ extension CalendarReducer {
     func viewChangeNutrient(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {
         switch nutrientType {
         case .carbohydrate:
-            state.carbs.value += 100
+            state.carbs.value += 20
         case .protein:
             state.protein.value += 5
         case .fat:
