@@ -34,6 +34,9 @@ struct CalendarReducer {
         var protein = NutrientData(type: .protein, value: 0, goal: 120)
         var fat = NutrientData(type: .fat, value: 0, goal: 50)
         var totalCaloriesGoal: Double = 2500
+        var currentCalories: Double = 0
+        
+        var isWrite: Bool = false
         
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")

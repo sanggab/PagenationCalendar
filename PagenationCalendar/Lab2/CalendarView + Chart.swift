@@ -80,24 +80,104 @@ extension CalendarView {
     @ViewBuilder
     var nutrientGuidanceView: some View {
         HStack(spacing: 0) {
-            Text("어떤 음식을 드셨나요?")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(Color(hex: "121416"))
-                .padding(.leading, 16)
+            calorieGuideTextView
             
-            Spacer()
-            
-            Rectangle()
-                .fill(Color(hex: "c6ccd2"))
-                .aspectRatio(contentMode: .fit)
-                .padding(.vertical, 2)
-                .padding(.trailing, 12)
         }
         .frame(height: 48)
         .frame(maxWidth: .infinity)
         .background(Color(hex: "f8f9fa"))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: "eff1f4")))
+    }
+    
+    @ViewBuilder
+    var calorieGuideTextView: some View {
+        if !store.isWrite {
+            mealInputPromptView
+        } else if store.currentCalories < store.totalCaloriesGoal {
+            remainingCalorieView
+        } else {
+            excessiveCalorieView
+        }
+    }
+    
+    @ViewBuilder
+    var mealInputPromptView: some View {
+        Group {
+            Text("오늘은 어떤 음식을 드셨나요?")
+                .font(.system(size: 15, weight: .medium))
+                .padding(.leading, 16)
+                .padding(.trailing, 12)
+            
+            Spacer()
+            
+            Image("icon-status-good")
+                .padding(.trailing, 6)
+        }
+    }
+    
+    @ViewBuilder
+    var remainingCalorieView: some View {
+        Group {
+            let remainCalorie = store.totalCaloriesGoal - store.currentCalories
+            let text = getString(
+                originStr: "목표 칼로리까지 \(Int(remainCalorie))kcal 남았어요",
+                highlightStr: "\(Int(remainCalorie))kcal",
+                highlightFont: .system(size: 15, weight: .bold),
+                highlightColor: Color(hex: "121416")
+            )
+            
+            Text(text)
+                .font(.system(size: 15, weight: .medium))
+                .contentTransition(.numericText(value: remainCalorie))
+                .padding(.leading, 16)
+                .padding(.trailing, 12)
+            
+            Spacer()
+            
+            Image("icon-status-excited")
+                .padding(.trailing, 6)
+        }
+    }
+    
+    @ViewBuilder
+    var excessiveCalorieView: some View {
+        Group {
+            let excessiveCalorie = store.currentCalories - store.totalCaloriesGoal
+            let text = getString(
+                originStr: "목표 칼로리를 \(Int(excessiveCalorie))kcal 초과했어요",
+                highlightStr: "\(Int(excessiveCalorie))kcal",
+                highlightFont: .system(size: 15, weight: .bold),
+                highlightColor: Color(hex: "121416")
+            )
+            
+            Text(text)
+                .font(.system(size: 15, weight: .medium))
+                .contentTransition(.numericText(value: excessiveCalorie))
+                .padding(.leading, 16)
+                .padding(.trailing, 12)
+            
+            Spacer()
+            
+            Image("icon-status-worry")
+                .padding(.trailing, 6)
+        }
+    }
+    
+    func getString(
+        originStr: String,
+        highlightStr: String,
+        highlightFont: Font,
+        highlightColor: Color
+    ) -> AttributedString {
+        var string = AttributedString(originStr)
+        
+        if let range = string.range(of: highlightStr) {
+            string[range].font = highlightFont
+            string[range].foregroundColor = highlightColor
+        }
+            
+        return string
     }
 }
 

@@ -59,11 +59,18 @@ struct NutrientData: Identifiable, Equatable {
     let goal: Double // goal in grams
     
     // Helper for calories (approximate: C=4, P=4, F=9)
+//    var calories: Double {
+//        let roundedValue = value.rounded()
+//        switch type {
+//        case .carbohydrate, .protein: return roundedValue * 4
+//        case .fat: return roundedValue * 9
+//        }
+//    }
+    
     var calories: Double {
-        let roundedValue = value.rounded()
         switch type {
-        case .carbohydrate, .protein: return roundedValue * 4
-        case .fat: return roundedValue * 9
+        case .carbohydrate, .protein: return value * 4
+        case .fat: return value * 9
         }
     }
     
@@ -90,7 +97,11 @@ struct DailyNutrition: Equatable {
     var totalCaloriesGoal: Double
     
     var totalCaloriesConsumed: Double {
-        carbs.calories + protein.calories + fat.calories
+        let roundedCarb = carbs.calories.rounded()
+        let roundedPro = protein.calories.rounded()
+        let roundedFat = fat.calories.rounded()
+        
+        return roundedCarb + roundedPro + roundedFat
     }
 }
 

@@ -177,12 +177,18 @@ extension CalendarReducer {
     func viewChangeNutrient(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {
         switch nutrientType {
         case .carbohydrate:
-            state.carbs.value += 20
+            state.carbs.value += 20.4
         case .protein:
             state.protein.value += 5
         case .fat:
             state.fat.value += 5
         }
+        
+        if !state.isWrite {
+            state.isWrite = true
+        }
+        
+        state.currentCalories = state.carbs.calories.rounded() + state.protein.calories.rounded() + state.fat.calories.rounded()
         
         return .none
     }
