@@ -120,18 +120,24 @@ extension CalendarView {
     var remainingCalorieView: some View {
         Group {
             let remainCalorie = store.totalCaloriesGoal - store.currentCalories
-            let text = getString(
-                originStr: "목표 칼로리까지 \(Int(remainCalorie))kcal 남았어요",
-                highlightStr: "\(Int(remainCalorie))kcal",
-                highlightFont: .system(size: 15, weight: .bold),
-                highlightColor: Color(hex: "121416")
-            )
             
-            Text(text)
-                .font(.system(size: 15, weight: .medium))
-                .contentTransition(.numericText(value: remainCalorie))
-                .padding(.leading, 16)
-                .padding(.trailing, 12)
+            HStack(spacing: 0) {
+                Text("목표 칼로리까지 ")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color(hex: "121416"))
+                
+                Text("\(Int(remainCalorie))kcal")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color(hex: "121416"))
+                    .contentTransition(.numericText(value: remainCalorie))
+                    .animation(.snappy, value: remainCalorie)
+                
+                Text(" 남았어요")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color(hex: "121416"))
+            }
+            .padding(.leading, 16)
+            .padding(.trailing, 12)
             
             Spacer()
             
@@ -144,40 +150,30 @@ extension CalendarView {
     var excessiveCalorieView: some View {
         Group {
             let excessiveCalorie = store.currentCalories - store.totalCaloriesGoal
-            let text = getString(
-                originStr: "목표 칼로리를 \(Int(excessiveCalorie))kcal 초과했어요",
-                highlightStr: "\(Int(excessiveCalorie))kcal",
-                highlightFont: .system(size: 15, weight: .bold),
-                highlightColor: Color(hex: "121416")
-            )
             
-            Text(text)
-                .font(.system(size: 15, weight: .medium))
-                .contentTransition(.numericText(value: excessiveCalorie))
-                .padding(.leading, 16)
-                .padding(.trailing, 12)
+            HStack(spacing: 0) {
+                Text("목표 칼로리를 ")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color(hex: "121416"))
+                
+                Text("\(Int(excessiveCalorie))kcal")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color(hex: "121416"))
+                    .contentTransition(.numericText(value: excessiveCalorie))
+                    .animation(.snappy, value: excessiveCalorie)
+                
+                Text(" 초과했어요")
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundStyle(Color(hex: "121416"))
+            }
+            .padding(.leading, 16)
+            .padding(.trailing, 12)
             
             Spacer()
             
             Image("icon-status-worry")
                 .padding(.trailing, 6)
         }
-    }
-    
-    func getString(
-        originStr: String,
-        highlightStr: String,
-        highlightFont: Font,
-        highlightColor: Color
-    ) -> AttributedString {
-        var string = AttributedString(originStr)
-        
-        if let range = string.range(of: highlightStr) {
-            string[range].font = highlightFont
-            string[range].foregroundColor = highlightColor
-        }
-            
-        return string
     }
 }
 
@@ -260,15 +256,15 @@ extension CalendarView {
             case .carbohydrate:
                 Text("\(Int(store.carbs.value.rounded()))")
                     .contentTransition(.numericText(value: store.carbs.value))
-                    .animation(.linear, value: store.carbs.value)
+                    .animation(.snappy, value: store.carbs.value)
             case .protein:
                 Text("\(Int(store.protein.value.rounded()))")
                     .contentTransition(.numericText(value: store.protein.value))
-                    .animation(.linear, value: store.protein.value)
+                    .animation(.snappy, value: store.protein.value)
             case .fat:
                 Text("\(Int(store.fat.value.rounded()))")
                     .contentTransition(.numericText(value: store.fat.value))
-                    .animation(.linear, value: store.fat.value)
+                    .animation(.snappy, value: store.fat.value)
             }
         }
         .font(.system(size: 18, weight: .bold))
@@ -282,15 +278,15 @@ extension CalendarView {
             case .carbohydrate:
                 Text("/ \(Int(store.carbs.goal))")
                     .contentTransition(.numericText(value: store.carbs.goal))
-                    .animation(.linear, value: store.carbs.goal)
+                    .animation(.snappy, value: store.carbs.goal)
             case .protein:
                 Text("/ \(Int(store.protein.goal))")
                     .contentTransition(.numericText(value: store.protein.goal))
-                    .animation(.linear, value: store.protein.goal)
+                    .animation(.snappy, value: store.protein.goal)
             case .fat:
                 Text("/ \(Int(store.fat.goal))")
                     .contentTransition(.numericText(value: store.fat.goal))
-                    .animation(.linear, value: store.fat.goal)
+                    .animation(.snappy, value: store.fat.goal)
             }
         }
         .font(.system(size: 13, weight: .medium))

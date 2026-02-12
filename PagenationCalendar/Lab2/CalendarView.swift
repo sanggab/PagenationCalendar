@@ -16,6 +16,8 @@ struct CalendarView: View {
         (UIScreen.main.bounds.width - 32)
     }
     
+    @Namespace var anim
+    
     
     // MARK: - View
     var body: some View {
@@ -172,7 +174,7 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var infinityScrollView: some View {
-        ScrollView(.horizontal) {
+        ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
                 nutrientDashboardCard
                     .padding(.bottom, 4)
