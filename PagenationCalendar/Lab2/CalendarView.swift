@@ -27,10 +27,6 @@ struct CalendarView: View {
                 .frame(height: 4)
             
             calendarView
-//            
-//            Rectangle()
-//                .fill(.clear)
-//                .frame(height: 16)
             
             contentView
             
@@ -65,8 +61,10 @@ extension CalendarView {
     var calendarView: some View {
         VStack(spacing: 2) {
             weekDaysView
+                .background(.gray)
             
             weeksView
+                .background(.orange)
         }
         .frame(height: 64)
     }
@@ -84,6 +82,7 @@ extension CalendarView {
                     }
             }
         }
+        .padding(.top, 4)
     }
     
     @ViewBuilder
@@ -159,13 +158,14 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var dailyHealthDashBoard: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 16) {
             infinityScrollView
             
-//            pageNationView
+            pageNationView
         }
+        .frame(height: 386)
         .padding(.top, 16)
-//        .frame(height: 360)
+        .background(.pink)
     }
 }
 
@@ -175,6 +175,7 @@ extension CalendarView {
         ScrollView(.horizontal) {
             HStack(spacing: 0) {
                 nutrientDashboardCard
+                    .padding(.bottom, 4)
                 
 //                nutrientDetailView
 //                
@@ -182,7 +183,6 @@ extension CalendarView {
             }
         }
         .scrollTargetBehavior(.paging)
-        .frame(maxWidth: .infinity)
         .background(.orange)
     }
     

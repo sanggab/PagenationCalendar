@@ -14,25 +14,33 @@ extension CalendarView {
     @ViewBuilder
     var nutrientDashboardCard: some View {
         VStack(spacing: 12) {
-            VStack(spacing: 20) {
-                dailyCalorieGoal
-                
-                chartView
-                
-                nutrientGuidanceView
-            }
-            .padding(.all, 16)
-            .background(.mint)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
-//            .padding(.horizontal, 16)
-//            .containerRelativeFrame(.horizontal)
+            
+            nutrientInsightView
             
             nutrientAnalysisView
         }
-//        .frame(width: cellWidth)
-//        .frame(maxWidth: .infinity)
+        .frame(height: 360)
+        .containerRelativeFrame(.horizontal)
         .background(.blue)
+    }
+}
+
+extension CalendarView {
+    @ViewBuilder
+    var nutrientInsightView: some View {
+        VStack(spacing: 20) {
+            dailyCalorieGoal
+            
+            chartView
+            
+            nutrientGuidanceView
+        }
+        .background(.mint)
+        .padding(.all, 16)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
+        .padding(.horizontal, 16)
     }
 }
 
@@ -92,48 +100,50 @@ extension CalendarView {
     @ViewBuilder
     var nutrientAnalysisView: some View {
         HStack(spacing: 0) {
-            HStack(spacing: 0) {
-                ForEach(Array(NutrientType.allCases.enumerated()), id: \.element) { (index, nutrient) in
-                    // TODO: Replace with actual nutrient analysis content
-                    // Placeholder content to avoid empty closure warnings
-                    
-                    VStack(spacing: 2) {
-                        HStack(spacing: 4) {
-                            nutrient.image
-                            
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(hex: "eff1f4"))
-                                .frame(width: 29, height: 20)
-                                .overlay {
-                                    Text("적정")
-                                        .font(.system(size: 12))
-                                        .foregroundStyle(Color(hex: "197dc4"))
-                                }
-                        }
-                        .frame(height: 26)
+            ForEach(Array(NutrientType.allCases.enumerated()), id: \.element) { (index, nutrient) in
+                // TODO: Replace with actual nutrient analysis content
+                // Placeholder content to avoid empty closure warnings
+                VStack(spacing: 2) {
+                    HStack(spacing: 4) {
+                        nutrient.image
                         
-                        nutrientStatusView(nutrient)
-                            .frame(height: 25)
-                    }
-                    .frame(width: ((cellWidth - 2 - 24) / 3))
-                    
-                    let count = NutrientType.allCases.count - 1
-                    
-                    if index != count {
-                        Rectangle()
+                        RoundedRectangle(cornerRadius: 4)
                             .fill(Color(hex: "eff1f4"))
-                            .frame(width: 1)
-                            .frame(height: 53)
+                            .frame(width: 29, height: 20)
+                            .overlay {
+                                Text("적정")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(Color(hex: "197dc4"))
+                            }
+                    }
+                    
+                    nutrientStatusView(nutrient)
+                        .frame(height: 25)
+                }
+                .containerRelativeFrame(.horizontal) { length, axis in
+                    switch axis {
+                    case .horizontal:
+                        return (length - 24 - 32 - 2) / 3
+                    case .vertical:
+                        return 53
                     }
                 }
+                .background(.pink)
+                
+                let count = NutrientType.allCases.count - 1
+                
+                if index != count {
+                    Rectangle()
+                        .fill(Color(hex: "eff1f4"))
+                        .frame(width: 1)
+                        .frame(height: 53)
+                }
             }
-            .padding(.vertical, 16)
-            //padding horizontal 12안주는 이유는 cellWidth 계산할 때 24를 뺏기 때문
         }
-        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+        .padding(.horizontal, 12)
         .background(.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 16)
         .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
     }
     
@@ -171,3 +181,46 @@ extension CalendarView {
         }
     }
 }
+
+//HStack(spacing: 0) {
+//    HStack(spacing: 0) {
+//        ForEach(Array(NutrientType.allCases.enumerated()), id: \.element) { (index, nutrient) in
+//            // TODO: Replace with actual nutrient analysis content
+//            // Placeholder content to avoid empty closure warnings
+//            
+//            VStack(spacing: 2) {
+//                HStack(spacing: 4) {
+//                    nutrient.image
+//                    
+//                    RoundedRectangle(cornerRadius: 4)
+//                        .fill(Color(hex: "eff1f4"))
+//                        .frame(width: 29, height: 20)
+//                        .overlay {
+//                            Text("적정")
+//                                .font(.system(size: 12))
+//                                .foregroundStyle(Color(hex: "197dc4"))
+//                        }
+//                }
+//                .frame(height: 26)
+//                
+//                nutrientStatusView(nutrient)
+//                    .frame(height: 25)
+//            }
+//            .frame(width: ((cellWidth - 2 - 24) / 3))
+//            
+//            let count = NutrientType.allCases.count - 1
+//            
+//            if index != count {
+//                Rectangle()
+//                    .fill(Color(hex: "eff1f4"))
+//                    .frame(width: 1)
+//                    .frame(height: 53)
+//            }
+//        }
+//    }
+//    .padding(.vertical, 16)
+//    //padding horizontal 12안주는 이유는 cellWidth 계산할 때 24를 뺏기 때문
+//}
+//.background(.white)
+//.clipShape(RoundedRectangle(cornerRadius: 16))
+//.shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
