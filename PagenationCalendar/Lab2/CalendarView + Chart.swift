@@ -217,32 +217,39 @@ extension CalendarView {
         .foregroundStyle(Color(hex: "6e7881"))
     }
 }
-
-// MARK: nutrientIntakeStatusText
 extension CalendarView {
+    // MARK: nutrientIntakeStatusText
     @ViewBuilder
     func nutrientIntakeStatusText(type nutrient: NutrientType) -> some View {
-        let model = evaluateNutrientStatus(type: nutrient)
+        let status = evaluateNutrientStatus(type: nutrient)
         
-        Text(model.text)
-            .font(.system(size: 12, weight: .semibold))
-            .foregroundStyle(model.color)
+        ZStack {
+            Text(status.text)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(status.color)
+                .id(status.text)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                    removal: .move(edge: .top).combined(with: .opacity)
+                ))
+        }
+        .animation(.snappy, value: status.text)
     }
     
     // MARK: evaluateNutrientStatus
     func evaluateNutrientStatus(type nutrient: NutrientType) -> (text: String, color: Color) {
         switch nutrient {
         case .carbohydrate:
-            let carbs = store.carbs
-            return (text: carbs.intakeStatus.id, color: carbs.intakeStatus.color)
+            let carb = store.carbs
+            return (text: carb.intakeStatus.id, color: carb.intakeStatus.color)
             
         case .protein:
-            let carbs = store.protein
-            return (text: carbs.intakeStatus.id, color: carbs.intakeStatus.color)
+            let protein = store.protein
+            return (text: protein.intakeStatus.id, color: protein.intakeStatus.color)
             
         case .fat:
-            let carbs = store.fat
-            return (text: carbs.intakeStatus.id, color: carbs.intakeStatus.color)
+            let fat = store.fat
+            return (text: fat.intakeStatus.id, color: fat.intakeStatus.color)
         }
     }
 }
