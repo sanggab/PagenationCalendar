@@ -28,6 +28,28 @@ enum NutrientType: String, CaseIterable, Identifiable, Equatable {
             Image("icon-fat")
         }
     }
+    // 권장 섭취량 미만
+    var min: Double {
+        switch self {
+        case .carbohydrate:
+            return 80
+        case .protein:
+            return 90
+        case .fat:
+            return 80
+        }
+    }
+    // 권장 섭취량 초과
+    var max: Double {
+        switch self {
+        case .carbohydrate:
+            return 120
+        case .protein:
+            return 130
+        case .fat:
+            return 110
+        }
+    }
 }
 
 struct NutrientData: Identifiable, Equatable {
@@ -43,6 +65,21 @@ struct NutrientData: Identifiable, Equatable {
         case .carbohydrate, .protein: return roundedValue * 4
         case .fat: return roundedValue * 9
         }
+    }
+    
+    var intakeStatus: IntakeStatus {
+        evaluateNutrientStatus(type: type)
+    }
+    
+    func evaluateNutrientStatus(type nutrient: NutrientType) -> IntakeStatus {
+        guard goal > 0 else { return .insufficient }
+        
+        let ratio = (value / goal) * 100
+        
+        if ratio < type.min { return .insufficient }
+        if ratio <= type.max { return .adequate }
+        
+        return .excessive
     }
 }
 
@@ -125,7 +162,6 @@ struct NutrientHalfDonutChart: View {
                 .font(.system(size: 34, weight: .bold))
                 .frame(height: 48)
                 .foregroundStyle(Color(hex: "121416"))
-//                .padding(.bottom, 0) // TODO: bottom padding 구하는 공식 찾기
         }
         .clipped()
     }

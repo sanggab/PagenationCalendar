@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct DayModel: Identifiable, Equatable {
     let id = UUID()
@@ -62,5 +63,26 @@ extension Date {
     
     var isFuture: Bool {
         self > Date()
+    }
+}
+
+enum IntakeStatus: String, Equatable, Identifiable {
+    case insufficient = "부족"
+    case adequate = "적정"
+    case excessive = "초과"
+    
+    var id: String { self.rawValue }
+}
+
+extension IntakeStatus {
+    var color: Color {
+        switch self {
+        case .insufficient:
+            Color(hex: "525960")
+        case .adequate:
+            Color(hex: "197dc4")
+        case .excessive:
+            Color(hex: "ee6300")
+        }
     }
 }

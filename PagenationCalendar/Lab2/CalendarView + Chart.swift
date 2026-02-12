@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 extension CalendarView {
     // TODO: shadow때문에 이상해지는 거 고치기
+    // MARK: nutrientDashboardCard
     @ViewBuilder
     var nutrientDashboardCard: some View {
         VStack(spacing: 12) {
@@ -26,6 +27,7 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    // MARK: nutrientInsightView
     @ViewBuilder
     var nutrientInsightView: some View {
         VStack(spacing: 20) {
@@ -45,6 +47,7 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    // MARK: dailyCalorieGoal
     @ViewBuilder
     var dailyCalorieGoal: some View {
         HStack(spacing: 0) {
@@ -58,6 +61,7 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    // MARK: chartView
     @ViewBuilder
     var chartView: some View {
         NutrientHalfDonutChart(
@@ -72,6 +76,7 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    // MARK: nutrientGuidanceView
     @ViewBuilder
     var nutrientGuidanceView: some View {
         HStack(spacing: 0) {
@@ -97,6 +102,7 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    // MARK: nutrientAnalysisView
     @ViewBuilder
     var nutrientAnalysisView: some View {
         HStack(spacing: 0) {
@@ -119,7 +125,10 @@ extension CalendarView {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
     }
-    
+}
+
+extension CalendarView {
+    // MARK: nutrientEvaluationCell
     @ViewBuilder
     func nutrientEvaluationCell(type nutrient: NutrientType) -> some View{
         VStack(spacing: 2) {
@@ -130,9 +139,7 @@ extension CalendarView {
                     .fill(Color(hex: "eff1f4"))
                     .frame(width: 29, height: 20)
                     .overlay {
-                        Text("적정")
-                            .font(.system(size: 12))
-                            .foregroundStyle(Color(hex: "197dc4"))
+                        nutrientIntakeStatusText(type: nutrient)
                     }
             }
             
@@ -153,111 +160,89 @@ extension CalendarView {
         .onTapGesture {
             store.send(.view(.changeNutrient(nutrient)))
         }
-        .background(.pink)
     }
-    
+}
+
+extension CalendarView {
+    // MARK: nutrientStatusView
     @ViewBuilder
     func nutrientStatusView(type nutrient: NutrientType) -> some View {
         HStack(spacing: 4) {
+            targetNutrientView(type: nutrient)
+            goalNutrientView(type: nutrient)
+        }
+    }
+    // MARK: targetNutrientView
+    @ViewBuilder
+    func targetNutrientView(type nutrient: NutrientType) -> some View {
+        Group {
             switch nutrient {
             case .carbohydrate:
                 Text("\(Int(store.carbs.value.rounded()))")
                     .contentTransition(.numericText(value: store.carbs.value))
                     .animation(.linear, value: store.carbs.value)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color(hex: "2d3238"))
-                
-                Text("/ \(Int(store.carbs.goal))")
-                    .contentTransition(.numericText(value: store.carbs.goal))
-                    .animation(.linear, value: store.carbs.goal)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color(hex: "6e7881"))
-                
             case .protein:
                 Text("\(Int(store.protein.value.rounded()))")
                     .contentTransition(.numericText(value: store.protein.value))
                     .animation(.linear, value: store.protein.value)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color(hex: "2d3238"))
-                
-                Text("/ \(Int(store.protein.goal))")
-                    .contentTransition(.numericText(value: store.protein.goal))
-                    .animation(.linear, value: store.protein.goal)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color(hex: "6e7881"))
-                
             case .fat:
                 Text("\(Int(store.fat.value.rounded()))")
                     .contentTransition(.numericText(value: store.fat.value))
                     .animation(.linear, value: store.fat.value)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color(hex: "2d3238"))
-                
+            }
+        }
+        .font(.system(size: 18, weight: .bold))
+        .foregroundStyle(Color(hex: "2d3238"))
+    }
+    // MARK: goalNutrientView
+    @ViewBuilder
+    func goalNutrientView(type nutrient: NutrientType) -> some View {
+        Group {
+            switch nutrient {
+            case .carbohydrate:
+                Text("/ \(Int(store.carbs.goal))")
+                    .contentTransition(.numericText(value: store.carbs.goal))
+                    .animation(.linear, value: store.carbs.goal)
+            case .protein:
+                Text("/ \(Int(store.protein.goal))")
+                    .contentTransition(.numericText(value: store.protein.goal))
+                    .animation(.linear, value: store.protein.goal)
+            case .fat:
                 Text("/ \(Int(store.fat.goal))")
                     .contentTransition(.numericText(value: store.fat.goal))
                     .animation(.linear, value: store.fat.goal)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color(hex: "6e7881"))
             }
         }
-    }
-    
-    func evaluateNutrientStatus(type nutrient: NutrientType) -> String {
-        switch nutrient {
-        case .carbohydrate:
-            let value: Double = store.carbs.value
-            let goal: Double = store.carbs.goal
-            
-            
-            
-            return ""
-        case .protein:
-            return ""
-        case .fat:
-            return ""
-        }
+        .font(.system(size: 13, weight: .medium))
+        .foregroundStyle(Color(hex: "6e7881"))
     }
 }
 
-//HStack(spacing: 0) {
-//    HStack(spacing: 0) {
-//        ForEach(Array(NutrientType.allCases.enumerated()), id: \.element) { (index, nutrient) in
-//            // TODO: Replace with actual nutrient analysis content
-//            // Placeholder content to avoid empty closure warnings
-//            
-//            VStack(spacing: 2) {
-//                HStack(spacing: 4) {
-//                    nutrient.image
-//                    
-//                    RoundedRectangle(cornerRadius: 4)
-//                        .fill(Color(hex: "eff1f4"))
-//                        .frame(width: 29, height: 20)
-//                        .overlay {
-//                            Text("적정")
-//                                .font(.system(size: 12))
-//                                .foregroundStyle(Color(hex: "197dc4"))
-//                        }
-//                }
-//                .frame(height: 26)
-//                
-//                nutrientStatusView(nutrient)
-//                    .frame(height: 25)
-//            }
-//            .frame(width: ((cellWidth - 2 - 24) / 3))
-//            
-//            let count = NutrientType.allCases.count - 1
-//            
-//            if index != count {
-//                Rectangle()
-//                    .fill(Color(hex: "eff1f4"))
-//                    .frame(width: 1)
-//                    .frame(height: 53)
-//            }
-//        }
-//    }
-//    .padding(.vertical, 16)
-//    //padding horizontal 12안주는 이유는 cellWidth 계산할 때 24를 뺏기 때문
-//}
-//.background(.white)
-//.clipShape(RoundedRectangle(cornerRadius: 16))
-//.shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
+// MARK: nutrientIntakeStatusText
+extension CalendarView {
+    @ViewBuilder
+    func nutrientIntakeStatusText(type nutrient: NutrientType) -> some View {
+        let model = evaluateNutrientStatus(type: nutrient)
+        
+        Text(model.text)
+            .font(.system(size: 12, weight: .semibold))
+            .foregroundStyle(model.color)
+    }
+    
+    // MARK: evaluateNutrientStatus
+    func evaluateNutrientStatus(type nutrient: NutrientType) -> (text: String, color: Color) {
+        switch nutrient {
+        case .carbohydrate:
+            let carbs = store.carbs
+            return (text: carbs.intakeStatus.id, color: carbs.intakeStatus.color)
+            
+        case .protein:
+            let carbs = store.protein
+            return (text: carbs.intakeStatus.id, color: carbs.intakeStatus.color)
+            
+        case .fat:
+            let carbs = store.fat
+            return (text: carbs.intakeStatus.id, color: carbs.intakeStatus.color)
+        }
+    }
+}
