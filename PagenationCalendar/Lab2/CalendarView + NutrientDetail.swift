@@ -92,6 +92,7 @@ extension CalendarView {
                 intakeProgresssingBar(type: nutrient)
             }
             .overlay(alignment: .leading) {
+                // 채움 진행이 닿으면 흰색으로 바뀌는 33%/66% 임계 마커
                 intakeDashLine(type: nutrient)
             }
             .clipped()
@@ -150,6 +151,7 @@ extension CalendarView {
     @ViewBuilder
     func intakeDashLine(type nutrient: NutrientType) -> some View {
         GeometryReader { proxy in
+            // 회색/흰색 마커 레이어의 대시 스타일을 동일하게 유지
             let strokeStyle = StrokeStyle(
                 lineWidth: 1.8,
                 lineCap: .round,
@@ -157,15 +159,19 @@ extension CalendarView {
                 dash: [3, 3]
             )
             
+            // 현재 채움 너비 계산 (intakeProgresssingBar와 동일해야 함)
             let calWidth = proxy.size.width * getIntakeRatio(type: nutrient)
             let fillWidth = min(proxy.size.width, calWidth)
+            // 마커 전환이 채움 애니메이션과 동기화되도록 동일한 애니메이션 사용
             let animation = Animation.timingCurve(0, 0, 0.58, 1, duration: 0.6).delay(0.2)
 
             ZStack {
+                // 기본 마커(항상 노출)
                 VerticalLineShape()
                     .stroke(Color(hex: "c6ccd2"), style: strokeStyle)
                     .frame(width: 3.6)
                     .frame(height: 15)
+                    // 바 높이가 12라서 y=6이 중앙(클립 적용됨)
                     .position(x: proxy.size.width * 0.33, y: 6)
 
                 VerticalLineShape()
@@ -174,6 +180,7 @@ extension CalendarView {
                     .frame(height: 15)
                     .position(x: proxy.size.width * 0.66, y: 6)
 
+                // 채움 영역에만 노출되는 흰색 마커
                 ZStack {
                     VerticalLineShape()
                         .stroke(Color.white, style: strokeStyle)
