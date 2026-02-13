@@ -91,19 +91,8 @@ extension CalendarView {
             .overlay(alignment: .leading) {
                 intakeProgresssingBar(type: nutrient)
             }
-            .overlay {
-                VerticalLineShape()
-                    .stroke(
-                        Color(hex: "c6ccd2"),
-                        style: StrokeStyle(
-                            lineWidth: 1.8,
-                            lineCap: .round,
-                            lineJoin: .round,
-                            dash: [3, 3]
-                        )
-                    )
-                    .frame(width: 3.6)
-                    .frame(height: 15)
+            .overlay(alignment: .leading) {
+                intakeDashLine(type: nutrient)
             }
             .clipped()
     }
@@ -154,6 +143,55 @@ extension CalendarView {
                 
             default:
                 EmptyView()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func intakeDashLine(type nutrient: NutrientType) -> some View {
+        GeometryReader { proxy in
+            let strokeStyle = StrokeStyle(
+                lineWidth: 1.8,
+                lineCap: .round,
+                lineJoin: .round,
+                dash: [3, 3]
+            )
+            
+            let calWidth = proxy.size.width * getIntakeRatio(type: nutrient)
+            let fillWidth = min(proxy.size.width, calWidth)
+            let animation = Animation.timingCurve(0, 0, 0.58, 1, duration: 0.6).delay(0.2)
+
+            ZStack {
+                VerticalLineShape()
+                    .stroke(Color(hex: "c6ccd2"), style: strokeStyle)
+                    .frame(width: 3.6)
+                    .frame(height: 15)
+                    .position(x: proxy.size.width * 0.33, y: 6)
+
+                VerticalLineShape()
+                    .stroke(Color(hex: "c6ccd2"), style: strokeStyle)
+                    .frame(width: 3.6)
+                    .frame(height: 15)
+                    .position(x: proxy.size.width * 0.66, y: 6)
+
+                ZStack {
+                    VerticalLineShape()
+                        .stroke(Color.white, style: strokeStyle)
+                        .frame(width: 3.6)
+                        .frame(height: 15)
+                        .position(x: proxy.size.width * 0.33, y: 6)
+
+                    VerticalLineShape()
+                        .stroke(Color.white, style: strokeStyle)
+                        .frame(width: 3.6)
+                        .frame(height: 15)
+                        .position(x: proxy.size.width * 0.66, y: 6)
+                }
+                .mask(alignment: .leading) {
+                    Rectangle()
+                        .frame(width: fillWidth, height: proxy.size.height)
+                        .animation(animation, value: fillWidth)
+                }
             }
         }
     }
