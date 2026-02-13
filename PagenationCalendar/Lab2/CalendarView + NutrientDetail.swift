@@ -68,6 +68,10 @@ extension CalendarView {
                         
                         nutrientStatusView(type: nutrient)
                         
+                        Image("icon-arrow-right-3-px")
+                            .renderingMode(.template)
+                            .foregroundStyle(Color(hex: "aab2bb"))
+                        
                         Spacer()
                         
                         nutrientIntakeStatusText(type: nutrient)
