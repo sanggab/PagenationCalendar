@@ -7,47 +7,94 @@ enum NutrientType: String, CaseIterable, Identifiable, Equatable {
     case carbohydrate = "탄수화물"
     case protein = "단백질"
     case fat = "지방"
+    case sodium = "나트륨"
+    case sugars = "당류"
+    case fiber = "식이섬유"
+    case cholesterol = "콜레스테롤"
     
     var id: String { self.rawValue }
     
     var color: Color {
         switch self {
-        case .carbohydrate: return Color.blue
-        case .protein: return Color.purple
-        case .fat: return Color.orange
+        case .carbohydrate:
+            Color(hex: "ffb948")
+        case .protein:
+            Color(hex: "8c72ff")
+        case .fat:
+            Color(hex: "18cd8c")
+        case .sodium:
+            Color(hex: "699eff")
+        case .sugars:
+            Color(hex: "ff796c")
+        case .fiber:
+            Color(hex: "aab2bb")
+        case .cholesterol:
+            Color(hex: "ffa72c")
         }
     }
     
-    var image: Image {
+    @ViewBuilder
+    var image: some View {
         switch self {
         case .carbohydrate:
             Image("icon-carb")
+                .renderingMode(.template)
+                .foregroundStyle(color)
         case .protein:
             Image("icon-pro")
+                .renderingMode(.template)
+                .foregroundStyle(color)
         case .fat:
             Image("icon-fat")
+                .renderingMode(.template)
+                .foregroundStyle(color)
+        case .sodium:
+            Image("icon-sodium")
+        case .sugars:
+            Image("icon-sugars")
+        case .fiber:
+            Image("icon-fiber")
+        case .cholesterol:
+            Image("icon-chol")
         }
     }
-    // 권장 섭취량 미만
-    var min: Double {
+    
+    /// 섭취량 부족
+    var insufficient: Double {
         switch self {
-        case .carbohydrate:
-            return 80
-        case .protein:
-            return 90
-        case .fat:
-            return 80
+        case .carbohydrate: 80
+        case .protein: 90
+        case .fat: 80
+        case .sodium: 0
+        case .sugars: 0
+        case .fiber: 80
+        case .cholesterol: 0
         }
     }
-    // 권장 섭취량 초과
-    var max: Double {
+    /// 섭취량 위험
+    var warning: Double {
         switch self {
-        case .carbohydrate:
-            return 120
-        case .protein:
-            return 130
-        case .fat:
-            return 110
+        case .sodium: 120
+        case .sugars: 120
+        case .fiber: 0
+        case .cholesterol: 120
+        default: 0
+        }
+    }
+    /// 섭취량 과다
+    var excessive: Double {
+        switch self {
+        case .carbohydrate: 120
+        case .protein: 130
+        case .fat: 110
+        default: 0
+        }
+    }
+    
+    var isMainNutrient: Bool {
+        switch self {
+        case .carbohydrate, .protein, .fat: true
+        default: false
         }
     }
 }
@@ -71,6 +118,7 @@ struct NutrientData: Identifiable, Equatable {
         switch type {
         case .carbohydrate, .protein: return value * 4
         case .fat: return value * 9
+        default: return value
         }
     }
     
@@ -78,16 +126,32 @@ struct NutrientData: Identifiable, Equatable {
         evaluateNutrientStatus(type: type)
     }
     
+    var intakeRatio: Double {
+        value.rounded() / goal
+    }
+    
     func evaluateNutrientStatus(type nutrient: NutrientType) -> IntakeStatus {
         guard goal > 0 else { return .insufficient }
         
         let ratio = (value / goal) * 100
         
-        if ratio < type.min { return .insufficient }
-        if ratio <= type.max { return .adequate }
-        
-        return .excessive
+        switch nutrient {
+        case .carbohydrate, .protein, .fat:
+            if ratio < nutrient.insufficient { return .insufficient }
+            if ratio <= nutrient.excessive { return .adequate }
+            return .excessive
+            
+        case .sodium, .sugars, .cholesterol:
+            if ratio <= 100 { return .adequate }
+            if ratio <= nutrient.warning { return .caution }
+            return .warning
+            
+        case .fiber:
+            if ratio < nutrient.insufficient { return .insufficient }
+            return .adequate
+        }
     }
+    
 }
 
 struct DailyNutrition: Equatable {

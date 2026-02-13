@@ -23,6 +23,7 @@ extension CalendarView {
         .frame(height: 360)
         .containerRelativeFrame(.horizontal)
         .background(.blue)
+        .padding(.bottom, 4)
     }
 }
 
@@ -182,10 +183,11 @@ extension CalendarView {
     @ViewBuilder
     var nutrientAnalysisView: some View {
         HStack(spacing: 0) {
-            ForEach(Array(NutrientType.allCases.enumerated()), id: \.element) { (index, nutrient) in
+            let list: [NutrientType] = [.carbohydrate, .protein, .fat]
+            ForEach(Array(list.enumerated()), id: \.element) { (index, nutrient) in
                 nutrientEvaluationCell(type: nutrient)
                 
-                let count = NutrientType.allCases.count - 1
+                let count = list.count - 1
                 
                 if index != count {
                     Rectangle()
@@ -211,12 +213,7 @@ extension CalendarView {
             HStack(spacing: 4) {
                 nutrient.image
                 
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color(hex: "eff1f4"))
-                    .frame(width: 29, height: 20)
-                    .overlay {
-                        nutrientIntakeStatusText(type: nutrient)
-                    }
+                nutrientIntakeStatusText(type: nutrient)
             }
             
             nutrientStatusView(type: nutrient)
@@ -265,9 +262,25 @@ extension CalendarView {
                 Text("\(Int(store.fat.value.rounded()))")
                     .contentTransition(.numericText(value: store.fat.value))
                     .animation(.snappy, value: store.fat.value)
+            case .sodium:
+                Text("\(Int(store.sodium.value.rounded()))")
+                    .contentTransition(.numericText(value: store.sodium.value))
+                    .animation(.snappy, value: store.sodium.value)
+            case .sugars:
+                Text("\(Int(store.sugars.value.rounded()))")
+                    .contentTransition(.numericText(value: store.sugars.value))
+                    .animation(.snappy, value: store.sugars.value)
+            case .fiber:
+                Text("\(Int(store.fiber.value.rounded()))")
+                    .contentTransition(.numericText(value: store.fiber.value))
+                    .animation(.snappy, value: store.fiber.value)
+            case .cholesterol:
+                Text("\(Int(store.chol.value.rounded()))")
+                    .contentTransition(.numericText(value: store.chol.value))
+                    .animation(.snappy, value: store.chol.value)
             }
         }
-        .font(.system(size: 18, weight: .bold))
+        .font(.system(size: nutrient.isMainNutrient ? 18 : 16, weight: .bold))
         .foregroundStyle(Color(hex: "2d3238"))
     }
     // MARK: goalNutrientView
@@ -276,17 +289,33 @@ extension CalendarView {
         Group {
             switch nutrient {
             case .carbohydrate:
-                Text("/ \(Int(store.carbs.goal))")
+                Text("/ \(Int(store.carbs.goal))g")
                     .contentTransition(.numericText(value: store.carbs.goal))
                     .animation(.snappy, value: store.carbs.goal)
             case .protein:
-                Text("/ \(Int(store.protein.goal))")
+                Text("/ \(Int(store.protein.goal))g")
                     .contentTransition(.numericText(value: store.protein.goal))
                     .animation(.snappy, value: store.protein.goal)
             case .fat:
-                Text("/ \(Int(store.fat.goal))")
+                Text("/ \(Int(store.fat.goal))g")
                     .contentTransition(.numericText(value: store.fat.goal))
                     .animation(.snappy, value: store.fat.goal)
+            case .sodium:
+                Text("/ \(Int(store.sodium.goal))mg")
+                    .contentTransition(.numericText(value: store.sodium.goal))
+                    .animation(.snappy, value: store.sodium.goal)
+            case .sugars:
+                Text("/ \(Int(store.sugars.goal))g")
+                    .contentTransition(.numericText(value: store.sugars.goal))
+                    .animation(.snappy, value: store.sugars.goal)
+            case .fiber:
+                Text("/ \(Int(store.fiber.goal))g")
+                    .contentTransition(.numericText(value: store.fiber.goal))
+                    .animation(.snappy, value: store.fiber.goal)
+            case .cholesterol:
+                Text("/ \(Int(store.chol.goal))mg")
+                    .contentTransition(.numericText(value: store.chol.goal))
+                    .animation(.snappy, value: store.chol.goal)
             }
         }
         .font(.system(size: 13, weight: .medium))
@@ -299,17 +328,22 @@ extension CalendarView {
     func nutrientIntakeStatusText(type nutrient: NutrientType) -> some View {
         let status = evaluateNutrientStatus(type: nutrient)
         
-        ZStack {
-            Text(status.text)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(status.color)
-                .id(status.text)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .bottom).combined(with: .opacity),
-                    removal: .move(edge: .top).combined(with: .opacity)
-                ))
-        }
-        .animation(.snappy, value: status.text)
+        RoundedRectangle(cornerRadius: 4)
+            .fill(Color(hex: "eff1f4"))
+            .frame(width: 29, height: 20)
+            .overlay {
+                ZStack {
+                    Text(status.text)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(status.color)
+                        .id(status.text)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .bottom).combined(with: .opacity),
+                            removal: .move(edge: .top).combined(with: .opacity)
+                        ))
+                }
+                .animation(.snappy, value: status.text)
+            }
     }
     
     // MARK: evaluateNutrientStatus
@@ -326,6 +360,22 @@ extension CalendarView {
         case .fat:
             let fat = store.fat
             return (text: fat.intakeStatus.id, color: fat.intakeStatus.color)
+            
+        case .sodium:
+            let sodium = store.sodium
+            return (text: sodium.intakeStatus.id, color: sodium.intakeStatus.color)
+            
+        case .sugars:
+            let sugars = store.sugars
+            return (text: sugars.intakeStatus.id, color: sugars.intakeStatus.color)
+            
+        case .fiber:
+            let fiber = store.fiber
+            return (text: fiber.intakeStatus.id, color: fiber.intakeStatus.color)
+            
+        case .cholesterol:
+            let chol = store.chol
+            return (text: chol.intakeStatus.id, color: chol.intakeStatus.color)
         }
     }
 }

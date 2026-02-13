@@ -13,21 +13,7 @@ struct ContentView: View {
     var store: StoreOf<MainReducer>
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Group {
-                Text("Dashboard")
-                    .font(.headline)
-                    .foregroundStyle(.black)
-                
-                calendarListView
-            }
-            .padding(.horizontal, 20)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.gray.opacity(0.1))
-        .task {
-            store.send(.view(.onAppear))
-        }
+        Text("hi")
     }
 }
 

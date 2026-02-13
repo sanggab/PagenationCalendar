@@ -176,11 +176,10 @@ extension CalendarView {
     var infinityScrollView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
-                nutrientDashboardCard
-                    .padding(.bottom, 4)
+//                nutrientDashboardCard
                 
-                nutrientDetailView
-//                
+                otherNutrientIntakeSummary
+//
 //                hydrationTrackerView
             }
         }
@@ -193,17 +192,6 @@ extension CalendarView {
         Rectangle()
             .fill(.mint)
             .frame(width: 30, height: 6)
-    }
-}
-
-extension CalendarView {
-    @ViewBuilder
-    var nutrientDetailView: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color(hex: "8c72ff"))
-            .padding(.horizontal, 16)
-            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
-            .containerRelativeFrame(.horizontal)
     }
 }
 
@@ -244,6 +232,23 @@ extension CalendarView {
         } else {
             return model.isSelected ? Color(hex: "2d3238") : Color(hex: "eff1f4")
         }
+    }
+
+    var dottedSeparatorStrokeStyle: StrokeStyle {
+        StrokeStyle(lineWidth: 1.8, lineCap: .round, dash: [3, 4])
+    }
+
+    var dottedSeparatorColor: Color {
+        Color(hex: "cbd5e1")
+    }
+}
+
+struct VerticalLineShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+        return path
     }
 }
 

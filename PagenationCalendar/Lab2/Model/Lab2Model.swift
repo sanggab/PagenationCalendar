@@ -69,7 +69,9 @@ extension Date {
 enum IntakeStatus: String, Equatable, Identifiable {
     case insufficient = "부족"
     case adequate = "적정"
-    case excessive = "초과"
+    case caution = "주의"
+    case warning = "위험"
+    case excessive = "과다"
     
     var id: String { self.rawValue }
 }
@@ -81,6 +83,10 @@ extension IntakeStatus {
             Color(hex: "525960")
         case .adequate:
             Color(hex: "197dc4")
+        case .caution:
+            Color(hex: "ffb948")
+        case .warning:
+            Color(hex: "ff5741")
         case .excessive:
             Color(hex: "ee6300")
         }

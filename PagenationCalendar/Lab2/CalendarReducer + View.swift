@@ -182,6 +182,14 @@ extension CalendarReducer {
             state.protein.value += 5
         case .fat:
             state.fat.value += 5
+        case .sodium:
+            state.sodium.value += 5
+        case .sugars:
+            state.sugars.value += 4
+        case .fiber:
+            state.fiber.value += 3
+        case .cholesterol:
+            state.chol.value += 2
         }
         
         if !state.isWrite {

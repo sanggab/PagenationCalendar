@@ -33,6 +33,12 @@ struct CalendarReducer {
         var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 300)
         var protein = NutrientData(type: .protein, value: 0, goal: 120)
         var fat = NutrientData(type: .fat, value: 0, goal: 50)
+        var sodium = NutrientData(type: .sodium, value: 0, goal: 50)
+        var sugars = NutrientData(type: .sugars, value: 0, goal: 50)
+        var fiber = NutrientData(type: .fiber, value: 0, goal: 50)
+        var chol = NutrientData(type: .cholesterol, value: 0, goal: 50)
+        
+        
         var totalCaloriesGoal: Double = 2500
         var currentCalories: Double = 0
         
