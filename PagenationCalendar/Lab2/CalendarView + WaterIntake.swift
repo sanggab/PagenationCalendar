@@ -36,7 +36,7 @@ extension CalendarView {
         VStack(spacing: 4) {
             waterToolTip
             
-            waterAnimationView
+            waterIntakeControlView
             
             waterIntakeStatusView
         }
@@ -73,51 +73,13 @@ extension CalendarView {
     }
     
     @ViewBuilder
-    var waterAnimationView: some View {
+    var waterIntakeControlView: some View {
         HStack(spacing: 4) {
-            Button {
-                store.send(.view(.decreaseWaterIntake))
-            } label: {
-                Image("icon-minus")
-            }
-            .frame(width: 36, height: 36)
-            .background(Color(hex: "f8f9fa"))
-            .clipShape(RoundedRectangle(cornerRadius: 18))
+            decreaseWaterIntakeBtn
             
-            ZStack {
-                cupImage
-                
-                LottieView(animation: .named("water_wave"))
-                    .resizable()
-                    .configure(\.contentMode, to: .scaleToFill)
-                    .looping()
-                    .frame(width: 128, height: 160)
-                    .offset(y: waveVerticalOffset)
-                    .mask {
-                        cupImage
-                    }
-                    .animation(
-                        .timingCurve(
-                            0.0,
-                            0.0,
-                            0.58,
-                            1.0,
-                            duration: 0.3
-                        ),
-                        value: waveVerticalOffset
-                    )
-            }
-            .padding(.vertical, 20)
-            .padding(.horizontal, 36)
-                        
-            Button {
-                store.send(.view(.increaseWaterIntake))
-            } label: {
-                Image("icon-plus")
-            }
-            .frame(width: 36, height: 36)
-            .background(Color(hex: "f8f9fa"))
-            .clipShape(RoundedRectangle(cornerRadius: 18))
+            waterWaveLottieView
+            
+            increaseWaterIntakeBtn
         }
         .padding(.top, 4)
     }
@@ -132,31 +94,78 @@ extension CalendarView {
         .frame(height: 36)
     }
 }
+// MARK: 음수량 증가 / 감소 버튼
+extension CalendarView {
+    @ViewBuilder
+    var decreaseWaterIntakeBtn: some View {
+        Button {
+            store.send(.view(.decreaseWaterIntake))
+        } label: {
+            Image("icon-minus")
+        }
+        .frame(width: 36, height: 36)
+        .background(Color(hex: "f8f9fa"))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+    }
+    
+    @ViewBuilder
+    var increaseWaterIntakeBtn: some View {
+        Button {
+            store.send(.view(.increaseWaterIntake))
+        } label: {
+            Image("icon-plus")
+        }
+        .frame(width: 36, height: 36)
+        .background(Color(hex: "f8f9fa"))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+    }
+}
 
 extension CalendarView {
-    private var cupFrameSize: CGSize {
-        CGSize(width: 128, height: 160)
+    @ViewBuilder
+    var waterWaveLottieView: some View {
+        ZStack {
+            cupImage
+            
+            LottieView(animation: .named("water_wave"))
+                .resizable()
+                .configure(\.contentMode, to: .scaleToFill)
+                .looping()
+                .frame(width: 128, height: 160)
+                .offset(y: waveVerticalOffset)
+                .mask {
+                    cupImage
+                }
+                .animation(
+                    .timingCurve(
+                        0.0,
+                        0.0,
+                        0.58,
+                        1.0,
+                        duration: 0.3
+                    ),
+                    value: waveVerticalOffset
+                )
+        }
+        .padding(.vertical, 20)
+        .padding(.horizontal, 36)
     }
-
-    private var waveVisibleHeight: CGFloat {
-        guard waterFillRatio > 0 else { return 0 }
-
-        return min(cupFrameSize.height, (cupFrameSize.height * waterFillRatio) + waveCrestHeadroom)
-    }
-
-    private var waveCrestHeadroom: CGFloat {
-        6
-    }
-
-    private var waveVerticalOffset: CGFloat {
-        (1.0 - waterFillRatio) * cupFrameSize.height
-    }
-
+    
     private var cupImage: some View {
         Image("img-water-cup")
             .resizable()
             .scaledToFit()
             .frame(width: cupFrameSize.width, height: cupFrameSize.height)
+    }
+}
+// MARK: WaterIntake Utils 모음
+extension CalendarView {
+    private var cupFrameSize: CGSize {
+        CGSize(width: 128, height: 160)
+    }
+    
+    private var waveVerticalOffset: CGFloat {
+        (1.0 - waterFillRatio) * cupFrameSize.height
     }
 
     private var waterFillRatio: CGFloat {

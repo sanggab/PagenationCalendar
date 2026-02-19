@@ -15,6 +15,7 @@ struct CalendarView: View {
     var cellWidth: CGFloat {
         (UIScreen.main.bounds.width - 32)
     }
+    
     @Namespace var anim
     
     
@@ -159,7 +160,7 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var dailyHealthDashBoard: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             infinityScrollView
             
             pageNationView
@@ -175,10 +176,10 @@ extension CalendarView {
     var infinityScrollView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
-//                nutrientDashboardCard
-//                
-//                otherNutrientIntakeSummary
-//
+                nutrientDashboardCard
+                
+                otherNutrientIntakeSummary
+
                 hydrationTrackerView
             }
         }

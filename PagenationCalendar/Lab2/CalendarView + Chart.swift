@@ -10,12 +10,10 @@ import SwiftUI
 import ComposableArchitecture
 
 extension CalendarView {
-    // TODO: shadow때문에 이상해지는 거 고치기
     // MARK: nutrientDashboardCard
     @ViewBuilder
     var nutrientDashboardCard: some View {
         VStack(spacing: 12) {
-            
             nutrientInsightView
             
             nutrientAnalysisView
@@ -37,8 +35,8 @@ extension CalendarView {
             
             nutrientGuidanceView
         }
-        .background(.mint)
-        .padding(.all, 16)
+        .padding(.vertical, 16.5)
+        .padding(.horizontal, 16)
         .background(.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
@@ -57,6 +55,7 @@ extension CalendarView {
             
             Spacer()
         }
+        .frame(height: 22)
     }
 }
 
