@@ -228,7 +228,22 @@ extension CalendarView {
             currentPage: store.currentDashboardPage
         )
     }
-
+    
+    @ViewBuilder
+    private func dashboardCardView(for page: Int) -> some View {
+        let page = DashboardSection(rawValue: page)
+        switch page {
+        case .nutrient:
+            nutrientDashboardCard
+        case .nutrientDetail:
+            otherNutrientIntakeSummary
+        case .waterIntake:
+            hydrationTrackerView
+        default:
+            EmptyView()
+        }
+    }
+    
     private func dashboardPageIndex(forInfiniteIndex index: Int) -> Int {
         guard store.totalDashboardPage > 0 else {
             return 0
@@ -237,20 +252,6 @@ extension CalendarView {
         // 반복 리스트 인덱스를 실제 페이지 인덱스(0...2)로 매핑한다.
         // 예: 0,3,6... -> 0 / 1,4,7... -> 1 / 2,5,8... -> 2
         return index % store.totalDashboardPage
-    }
-
-    @ViewBuilder
-    private func dashboardCardView(for page: Int) -> some View {
-        switch page {
-        case 0:
-            nutrientDashboardCard
-
-        case 1:
-            otherNutrientIntakeSummary
-
-        default:
-            hydrationTrackerView
-        }
     }
 }
 

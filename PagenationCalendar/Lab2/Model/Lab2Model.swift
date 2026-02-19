@@ -100,3 +100,15 @@ enum WaterIntakeGuildText: String, Equatable, Identifiable {
     
     var id: String { self.rawValue }
 }
+
+/// 메인 page dashboard
+enum DashboardSection: Int, Equatable, Identifiable, CaseIterable {
+    /// 탄/단/지 영양소 dashboard
+    case nutrient = 0
+    /// 부가영양소 dashboard
+    case nutrientDetail = 1
+    /// 음수량 dashboard
+    case waterIntake = 2
+    
+    var id: Int { self.rawValue }
+}

@@ -29,7 +29,7 @@ struct CalendarReducer {
         var currentScrollID: DayModel.ID?
         
         // 실제 콘텐츠 페이지 수(대시보드/부가영앙소/음수량)
-        var totalDashboardPage: Int = 3
+        var totalDashboardPage: Int = DashboardSection.allCases.count
         // 페이지네이션 표시용 인덱스(항상 0...totalDashboardPage-1)
         var currentDashboardPage: Int = 0
         // ScrollView가 현재 보고 있는 "반복 리스트"의 실제 인덱스
