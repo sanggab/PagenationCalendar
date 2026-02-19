@@ -108,6 +108,11 @@ extension CalendarReducer {
         
         // 타이틀 설정 (오늘 날짜 기준)
         state.currentTitle = formatTitle(date: now, calendar: calendar)
+
+        // 무한 스크롤은 반복 리스트의 중앙에서 시작해야
+        // 좌/우 어느 방향으로 넘겨도 충분한 버퍼가 생기고 경계 점프가 티 나지 않는다.
+        state.currentDashboardPage = 0
+        state.currentDashboardScrollPosition = state.dashboardCenterScrollPosition
         
         return .none
     }
@@ -218,7 +223,34 @@ extension CalendarReducer {
 
 extension CalendarReducer {
     func viewDashboardPageChangedAction(_ state: inout CalendarReducer.State, page: Int?) -> Effect<Action> {
-        state.currentDashboardPage = page
+        guard let page else {
+            return .none
+        }
+
+        // 실제 콘텐츠 페이지 수(3개)를 기준으로 현재 논리 페이지를 계산한다.
+        // 스크롤 인덱스는 매우 큰 반복 리스트 기준이므로 모듈러 연산으로 0...2에 사상한다.
+        let totalPages = state.totalDashboardPage
+        guard totalPages > 0 else {
+            return .none
+        }
+
+        let normalizedPage = ((page % totalPages) + totalPages) % totalPages
+
+        // 페이지네이션(UI 점)은 논리 인덱스를 사용하고,
+        // 스크롤 위치는 실제 반복 리스트 인덱스를 유지한다.
+        state.currentDashboardPage = normalizedPage
+        state.currentDashboardScrollPosition = page
+
+        // 가장자리 근처에서는 동일한 논리 페이지를 유지한 채 중앙 인덱스로 순간 재배치한다.
+        // 사용자는 같은 카드에 머물러 있기 때문에 점프가 거의 감지되지 않고,
+        // 내부 인덱스만 가운데로 돌아와 무한 스크롤이 계속 가능해진다.
+        let minEdge = totalPages
+        let maxEdge = state.totalDashboardScrollableItemCount - totalPages - 1
+
+        if page <= minEdge || page >= maxEdge {
+            state.currentDashboardScrollPosition = state.dashboardCenterScrollPosition + normalizedPage
+        }
+
         return .none
     }
 }

@@ -93,10 +93,8 @@ extension CalendarView {
     var calendarView: some View {
         VStack(spacing: 2) {
             weekDaysView
-                .background(.gray)
             
             weeksView
-                .background(.orange)
         }
         .frame(height: 64)
     }
@@ -183,7 +181,6 @@ extension CalendarView {
             dailyHealthDashBoard
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .background(.orange)
     }
 }
 
@@ -196,7 +193,6 @@ extension CalendarView {
             pageNationView
         }
         .frame(height: 386)
-        .background(.pink)
         .padding(.top, 16)
     }
 }
@@ -204,25 +200,24 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var infinityScrollView: some View {
+        // 핵심 원리:
+        // 1) 실제 3페이지를 여러 사이클로 반복 렌더한다.
+        // 2) 사용자가 넘길 때마다 "스크롤 인덱스"는 계속 증가/감소한다.
+        // 3) 리듀서에서 가장자리 접근 시 중앙으로 재배치해 끝이 없는 것처럼 유지한다.
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 0) {
-                nutrientDashboardCard
-                    .id(0)
-                
-                otherNutrientIntakeSummary
-                    .id(1)
-                
-                hydrationTrackerView
-                    .id(2)
+                ForEach(0..<store.totalDashboardScrollableItemCount, id: \.self) { index in
+                    dashboardCardView(for: dashboardPageIndex(forInfiniteIndex: index))
+                        .id(index)
+                }
             }
             .scrollTargetLayout()
         }
         .scrollTargetBehavior(.paging)
         .scrollPosition(id: Binding(
-            get: { store.currentDashboardPage },
+            get: { store.currentDashboardScrollPosition },
             set: { store.send(.view(.dashboardPageChanged($0))) }
         ))
-        .background(.orange)
         .frame(height: 360)
     }
     
@@ -230,8 +225,32 @@ extension CalendarView {
     var pageNationView: some View {
         PageControl(
             numberOfPages: store.totalDashboardPage,
-            currentPage: store.currentDashboardPage ?? 0
+            currentPage: store.currentDashboardPage
         )
+    }
+
+    private func dashboardPageIndex(forInfiniteIndex index: Int) -> Int {
+        guard store.totalDashboardPage > 0 else {
+            return 0
+        }
+
+        // 반복 리스트 인덱스를 실제 페이지 인덱스(0...2)로 매핑한다.
+        // 예: 0,3,6... -> 0 / 1,4,7... -> 1 / 2,5,8... -> 2
+        return index % store.totalDashboardPage
+    }
+
+    @ViewBuilder
+    private func dashboardCardView(for page: Int) -> some View {
+        switch page {
+        case 0:
+            nutrientDashboardCard
+
+        case 1:
+            otherNutrientIntakeSummary
+
+        default:
+            hydrationTrackerView
+        }
     }
 }
 
@@ -243,4 +262,3 @@ extension CalendarView {
         )
     )
 }
-

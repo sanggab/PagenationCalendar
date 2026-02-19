@@ -21,7 +21,6 @@ extension CalendarView {
                 .padding(.horizontal, 16)
         }
         .containerRelativeFrame(.horizontal)
-        .background(.purple)
     }
 }
 

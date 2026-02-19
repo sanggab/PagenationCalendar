@@ -18,7 +18,6 @@ extension CalendarView {
             waterIntakeView
         }
         .containerRelativeFrame(.horizontal)
-        .background(.purple)
     }
 }
 

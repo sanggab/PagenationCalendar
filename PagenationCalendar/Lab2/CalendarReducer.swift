@@ -28,8 +28,26 @@ struct CalendarReducer {
         var currentTitle: String = ""
         var currentScrollID: DayModel.ID?
         
+        // 실제 콘텐츠 페이지 수(대시보드/부가영앙소/음수량)
         var totalDashboardPage: Int = 3
-        var currentDashboardPage: Int? = 0
+        // 페이지네이션 표시용 인덱스(항상 0...totalDashboardPage-1)
+        var currentDashboardPage: Int = 0
+        // ScrollView가 현재 보고 있는 "반복 리스트"의 실제 인덱스
+        var currentDashboardScrollPosition: Int?
+        // 무한처럼 보이게 만들기 위해 실제 페이지를 몇 번 반복해서 렌더할지
+        // 값이 클수록 끝에 도달하기 전까지 더 오래 스크롤 가능
+        var dashboardInfiniteCycleCount: Int = 120
+
+        // ScrollView에 그릴 전체 아이템 수(페이지 3개 * 반복 횟수)
+        var totalDashboardScrollableItemCount: Int {
+            totalDashboardPage * dashboardInfiniteCycleCount
+        }
+
+        // 초기 진입/재센터링 기준 인덱스
+        // 가운데 사이클의 첫 페이지를 기준으로 잡아 양쪽으로 충분한 여유를 둔다.
+        var dashboardCenterScrollPosition: Int {
+            (dashboardInfiniteCycleCount / 2) * totalDashboardPage
+        }
         
         var weekdays: [String] = []
         
