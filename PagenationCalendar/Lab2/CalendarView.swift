@@ -166,7 +166,7 @@ extension CalendarView {
             pageNationView
         }
         .frame(height: 386)
-        .padding(.top, 16)
+        .padding(.top, 20)
         .background(.pink)
     }
 }
@@ -177,10 +177,10 @@ extension CalendarView {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
 //                nutrientDashboardCard
-                
-                otherNutrientIntakeSummary
+//                
+//                otherNutrientIntakeSummary
 //
-//                hydrationTrackerView
+                hydrationTrackerView
             }
         }
         .scrollTargetBehavior(.paging)
@@ -195,17 +195,6 @@ extension CalendarView {
     }
 }
 
-extension CalendarView {
-    @ViewBuilder
-    var hydrationTrackerView: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color(hex: "18cd8c"))
-            .padding(.horizontal, 16)
-            .shadow(color: Color(hex: "2d3238"), radius: 10, x: 0, y: 1)
-            .containerRelativeFrame(.horizontal)
-    }
-}
-
 #Preview {
     CalendarView(
         store: Store(
@@ -213,49 +202,4 @@ extension CalendarView {
             reducer: { CalendarReducer() }
         )
     )
-}
-
-extension CalendarView {
-    func isForegrounsStyleColor(for model: DayModel) -> Color {
-        if model.isSelected {
-            return Color(hex: "ffffff")
-        } else if model.isWritted {
-            return Color(hex: "2d3238")
-        } else {
-            return Color(hex: "6e7881")
-        }
-    }
-    
-    func isBackgroundColor(for model: DayModel) -> Color {
-        if model.isFuture {
-            return Color(hex: "eff1f4")
-        } else {
-            return model.isSelected ? Color(hex: "2d3238") : Color(hex: "eff1f4")
-        }
-    }
-
-    var dottedSeparatorStrokeStyle: StrokeStyle {
-        StrokeStyle(lineWidth: 1.8, lineCap: .round, dash: [3, 4])
-    }
-
-    var dottedSeparatorColor: Color {
-        Color(hex: "cbd5e1")
-    }
-}
-
-struct VerticalLineShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-        return path
-    }
-}
-
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
-            Array(self[$0 ..< Swift.min($0 + size, count)])
-        }
-    }
 }

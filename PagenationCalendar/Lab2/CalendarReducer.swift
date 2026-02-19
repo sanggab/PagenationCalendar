@@ -41,8 +41,12 @@ struct CalendarReducer {
         
         var totalCaloriesGoal: Double = 2500
         var currentCalories: Double = 0
-        
+        // 캘린더 작성 됬는 지
         var isWrite: Bool = false
+        
+        var totalWaterIntakeGoal: Double = 3.5
+        var currentWaterIntake: Double = 0.0
+        var waterIntakeStep: Double = 0.25
         
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
@@ -62,6 +66,8 @@ struct CalendarReducer {
             case dayTapped(DayModel)
             case weekdayHeaderTapped(Int)
             case changeNutrient(NutrientType)
+            case increaseWaterIntake
+            case decreaseWaterIntake
         }
         
         @CasePathable

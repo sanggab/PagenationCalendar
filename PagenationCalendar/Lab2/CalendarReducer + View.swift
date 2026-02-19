@@ -26,6 +26,12 @@ extension CalendarReducer {
             
         case .changeNutrient(let type):
             return viewChangeNutrient(&state, type: type)
+            
+        case .increaseWaterIntake:
+            return viewIncreaseWaterIntake(&state)
+            
+        case .decreaseWaterIntake:
+            return viewDecreaseWaterIntake(&state)
         }
     }
 }
@@ -197,6 +203,28 @@ extension CalendarReducer {
         }
         
         state.currentCalories = state.carbs.calories.rounded() + state.protein.calories.rounded() + state.fat.calories.rounded()
+        
+        return .none
+    }
+}
+
+extension CalendarReducer {
+    func viewIncreaseWaterIntake(_ state: inout CalendarReducer.State) -> Effect<Action> {
+        guard state.currentWaterIntake < state.totalWaterIntakeGoal else {
+            return .none
+        }
+        
+        state.currentWaterIntake += state.waterIntakeStep
+        
+        return .none
+    }
+    
+    func viewDecreaseWaterIntake(_ state: inout CalendarReducer.State) -> Effect<Action> {
+        guard state.currentWaterIntake > 0.0 else {
+            return .none
+        }
+        
+        state.currentWaterIntake -= state.waterIntakeStep
         
         return .none
     }
