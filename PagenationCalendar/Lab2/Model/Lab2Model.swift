@@ -92,3 +92,11 @@ extension IntakeStatus {
         }
     }
 }
+
+enum WaterIntakeGuildText: String, Equatable, Identifiable {
+    case emptyRecord = "지금 물 한 모금 어때요?"
+    case inProgress  = "조금만 더 마셔도 좋아요 💧"
+    case goalAchieved = "오늘 필요한 물을 충분히 마셨어요"
+    
+    var id: String { self.rawValue }
+}

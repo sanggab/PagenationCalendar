@@ -30,10 +30,6 @@ extension CalendarView {
 
 
 extension CalendarView {
-    private var waterIntakeNumberFormat: FloatingPointFormatStyle<Double> {
-        .number.precision(.fractionLength(1...2))
-    }
-
     @ViewBuilder
     var waterIntakeView: some View {
         VStack(spacing: 4) {
@@ -47,7 +43,7 @@ extension CalendarView {
     
     @ViewBuilder
     var waterToolTip: some View {
-        Text("지금 물 한 모금 어때요?")
+        Text(store.waterIntakeGuideText.rawValue)
             .font(.system(size: 15, weight: .medium))
             .foregroundStyle(Color(hex: "121416"))
             .padding(.vertical, 8)
@@ -106,19 +102,33 @@ extension CalendarView {
     
     @ViewBuilder
     var waterIntakeStatusView: some View {
-        HStack(spacing: 0) {
-            Text("\(store.currentWaterIntake.formatted(waterIntakeNumberFormat))L ")
-                .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(Color(hex: "121416"))
-                .contentTransition(.numericText(value: store.currentWaterIntake))
-                .animation(.snappy, value: store.currentWaterIntake)
-            
-            Text("/ \(store.totalWaterIntakeGoal.formatted(waterIntakeNumberFormat))L")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(Color(hex: "6e7881"))
-                .contentTransition(.numericText(value: store.totalWaterIntakeGoal))
-                .animation(.snappy, value: store.totalWaterIntakeGoal)
-        }
+        Text(waterIntakeStatusAttributedText)
+            .monospacedDigit()
+            .contentTransition(.numericText(value: store.currentWaterIntake))
+            .animation(.snappy, value: store.currentWaterIntake)
+            .animation(.snappy, value: store.totalWaterIntakeGoal)
         .frame(height: 36)
+    }
+}
+
+extension CalendarView {
+    private var waterIntakeNumberFormat: FloatingPointFormatStyle<Double> {
+        .number.precision(.fractionLength(1...2))
+    }
+
+    private var waterIntakeStatusAttributedText: AttributedString {
+        let currentColor = store.currentWaterIntake >= store.totalWaterIntakeGoal ? Color(hex: "0d90fb")
+                                                                                  : Color(hex: "121416")
+        
+        var current = AttributedString("\(store.currentWaterIntake.formatted(waterIntakeNumberFormat))L")
+        current.font = .system(size: 26, weight: .bold)
+        current.foregroundColor = currentColor
+
+        var goal = AttributedString(" / \(store.totalWaterIntakeGoal.formatted(waterIntakeNumberFormat))L")
+        goal.font = .system(size: 18, weight: .medium)
+        goal.foregroundColor = Color(hex: "6e7881")
+
+        current += goal
+        return current
     }
 }

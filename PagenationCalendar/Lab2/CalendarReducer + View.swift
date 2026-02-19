@@ -210,13 +210,9 @@ extension CalendarReducer {
 
 extension CalendarReducer {
     func viewIncreaseWaterIntake(_ state: inout CalendarReducer.State) -> Effect<Action> {
-        guard state.currentWaterIntake < state.totalWaterIntakeGoal else {
-            return .none
-        }
-        
         state.currentWaterIntake += state.waterIntakeStep
         
-        return .none
+        return .send(.inner(.determineWaterIntakeGuildText))
     }
     
     func viewDecreaseWaterIntake(_ state: inout CalendarReducer.State) -> Effect<Action> {
@@ -226,6 +222,6 @@ extension CalendarReducer {
         
         state.currentWaterIntake -= state.waterIntakeStep
         
-        return .none
+        return .send(.inner(.determineWaterIntakeGuildText))
     }
 }

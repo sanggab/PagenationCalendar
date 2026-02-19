@@ -48,6 +48,8 @@ struct CalendarReducer {
         var currentWaterIntake: Double = 0.0
         var waterIntakeStep: Double = 0.25
         
+        var waterIntakeGuideText: WaterIntakeGuildText = .emptyRecord
+        
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
             self.calendar.firstWeekday = 2
@@ -72,7 +74,7 @@ struct CalendarReducer {
         
         @CasePathable
         enum InnerAction: Equatable {
-            case on
+            case determineWaterIntakeGuildText
         }
     }
     
