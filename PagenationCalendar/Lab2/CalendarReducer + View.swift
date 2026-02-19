@@ -16,25 +16,28 @@ extension CalendarReducer {
             return viewOnAppearAction(&state)
             
         case .scrollChanged(let id):
-            return viewScrollChanged(&state, id: id)
+            return viewScrollChangedAction(&state, id: id)
+            
+        case .todayTapped:
+            return viewTodayTappedAction(&state)
             
         case .dayTapped(let dayModel):
             return viewDayTappedAction(&state, model: dayModel)
             
         case .weekdayHeaderTapped(let index):
-            return viewWeekdayHeaderTapped(&state, index: index)
+            return viewWeekdayHeaderTappedAction(&state, index: index)
             
         case .changeNutrient(let type):
-            return viewChangeNutrient(&state, type: type)
+            return viewChangeNutrientAction(&state, type: type)
 
         case .dashboardPageChanged(let page):
-            return viewDashboardPageChanged(&state, page: page)
+            return viewDashboardPageChangedAction(&state, page: page)
             
         case .increaseWaterIntake:
-            return viewIncreaseWaterIntake(&state)
+            return viewIncreaseWaterIntakeAction(&state)
             
         case .decreaseWaterIntake:
-            return viewDecreaseWaterIntake(&state)
+            return viewDecreaseWaterIntakeAction(&state)
         }
     }
 }
@@ -111,57 +114,28 @@ extension CalendarReducer {
 }
 
 extension CalendarReducer {
-    func viewWeekdayHeaderTapped(_ state: inout CalendarReducer.State, index: Int) -> Effect<Action> {
-        // 1. 현재 보이는 주의 시작 날짜(ID)를 찾는다.
-        guard let currentScrollID = state.currentScrollID,
-              let weekStartIndex = state.model.firstIndex(where: { $0.id == currentScrollID }) else {
-            return .none
-        }
-        
-        // 2. 해당 주의 시작 인덱스 + 탭한 요일 인덱스(0...6)를 더해 타겟 날짜를 찾는다.
-        let targetIndex = weekStartIndex + index
-        
-        // 3. 인덱스가 유효한지 확인한다.
-        guard state.model.indices.contains(targetIndex) else {
-            return .none
-        }
-        
-        let targetModel = state.model[targetIndex]
-        
-        // 4. 해당 날짜를 탭한 것과 동일한 로직을 수행한다.
-        return viewDayTappedAction(&state, model: targetModel)
-    }
-}
-
-extension CalendarReducer {
-    func viewDashboardPageChanged(_ state: inout CalendarReducer.State, page: Int?) -> Effect<Action> {
-        state.currentDashboardPage = page
-        return .none
-    }
-}
-
-extension CalendarReducer {
-    func viewScrollChanged(_ state: inout CalendarReducer.State, id: DayModel.ID?) -> Effect<Action> {
+    func viewScrollChangedAction(_ state: inout CalendarReducer.State, id: DayModel.ID?) -> Effect<Action> {
         state.currentScrollID = id
         return .none
     }
 }
 
 extension CalendarReducer {
-    private func formatTitle(date: Date, calendar: Calendar) -> String {
-        let currentYear = calendar.component(.year, from: Date())
-        let targetYear = calendar.component(.year, from: date)
+    func viewTodayTappedAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
+        let calendar = state.calendar
+        let now = Date()
+
+        // 오늘 버튼: 오늘이 포함된 주(월~일) 데이터를 먼저 보강한다.
+        ensureCurrentWeekModels(&state, containing: now, now: now, calendar: calendar)
         
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        
-        if currentYear == targetYear {
-            formatter.dateFormat = "M. d (E)"
-        } else {
-            formatter.dateFormat = "yy. M. d (E)"
+        // 날짜 플래그는 현재 시각 기준으로 동기화한다.
+        refreshDayFlags(&state, now: now, calendar: calendar)
+
+        guard let todayModel = state.model.first(where: { calendar.isDate($0.date, inSameDayAs: now) }) else {
+            return .none
         }
-        
-        return formatter.string(from: date)
+
+        return viewDayTappedAction(&state, model: todayModel)
     }
 }
 
@@ -190,7 +164,31 @@ extension CalendarReducer {
 }
 
 extension CalendarReducer {
-    func viewChangeNutrient(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {
+    func viewWeekdayHeaderTappedAction(_ state: inout CalendarReducer.State, index: Int) -> Effect<Action> {
+        // 1. 현재 보이는 주의 시작 날짜(ID)를 찾는다.
+        guard let currentScrollID = state.currentScrollID,
+              let weekStartIndex = state.model.firstIndex(where: { $0.id == currentScrollID }) else {
+            return .none
+        }
+        
+        // 2. 해당 주의 시작 인덱스 + 탭한 요일 인덱스(0...6)를 더해 타겟 날짜를 찾는다.
+        let targetIndex = weekStartIndex + index
+        
+        // 3. 인덱스가 유효한지 확인한다.
+        guard state.model.indices.contains(targetIndex) else {
+            return .none
+        }
+        
+        let targetModel = state.model[targetIndex]
+        
+        // 4. 해당 날짜를 탭한 것과 동일한 로직을 수행한다.
+        return viewDayTappedAction(&state, model: targetModel)
+    }
+}
+
+
+extension CalendarReducer {
+    func viewChangeNutrientAction(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {
         switch nutrientType {
         case .carbohydrate:
             state.carbs.value += 20.4
@@ -219,13 +217,20 @@ extension CalendarReducer {
 }
 
 extension CalendarReducer {
-    func viewIncreaseWaterIntake(_ state: inout CalendarReducer.State) -> Effect<Action> {
+    func viewDashboardPageChangedAction(_ state: inout CalendarReducer.State, page: Int?) -> Effect<Action> {
+        state.currentDashboardPage = page
+        return .none
+    }
+}
+
+extension CalendarReducer {
+    func viewIncreaseWaterIntakeAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
         state.currentWaterIntake += state.waterIntakeStep
         
         return .send(.inner(.determineWaterIntakeGuildText))
     }
     
-    func viewDecreaseWaterIntake(_ state: inout CalendarReducer.State) -> Effect<Action> {
+    func viewDecreaseWaterIntakeAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
         guard state.currentWaterIntake > 0.0 else {
             return .none
         }
@@ -233,5 +238,98 @@ extension CalendarReducer {
         state.currentWaterIntake -= state.waterIntakeStep
         
         return .send(.inner(.determineWaterIntakeGuildText))
+    }
+}
+// MARK: ViewAction의 Utils 모음
+extension CalendarReducer {
+    private func formatTitle(date: Date, calendar: Calendar) -> String {
+        let currentYear = calendar.component(.year, from: Date())
+        let targetYear = calendar.component(.year, from: date)
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        
+        if currentYear == targetYear {
+            formatter.dateFormat = "M. d E"
+        } else {
+            formatter.dateFormat = "yy. M. d E"
+        }
+        
+        return formatter.string(from: date)
+    }
+
+    private func refreshDayFlags(_ state: inout CalendarReducer.State, now: Date, calendar: Calendar) {
+        for index in state.model.indices {
+            let dayDate = state.model[index].date
+
+            let isToday = calendar.isDate(dayDate, inSameDayAs: now)
+            let isFuture = calendar.compare(dayDate, to: now, toGranularity: .day) == .orderedDescending
+
+            if state.model[index].isToday != isToday {
+                state.model[index].isToday = isToday
+            }
+
+            if state.model[index].isFuture != isFuture {
+                state.model[index].isFuture = isFuture
+            }
+        }
+    }
+
+    private func ensureCurrentWeekModels(
+        _ state: inout CalendarReducer.State,
+        containing date: Date,
+        now: Date,
+        calendar: Calendar
+    ) {
+        let weekStart = date.startOfWeek(using: calendar)
+
+        // 주 범위는 월요일 시작 ~ 일요일 종료로 고정한다.
+        guard let weekEnd = calendar.date(byAdding: .day, value: 6, to: weekStart) else {
+            return
+        }
+
+        var currentDate = weekStart
+        var didAppend = false
+
+        while calendar.compare(currentDate, to: weekEnd, toGranularity: .day) != .orderedDescending {
+            let isAlreadyExist = state.model.contains { dayModel in
+                calendar.isDate(dayModel.date, inSameDayAs: currentDate)
+            }
+
+            // 모델에 없는 날짜만 채운다.
+            if !isAlreadyExist {
+                state.model.append(makeDayModel(date: currentDate, now: now, calendar: calendar))
+                didAppend = true
+            }
+
+            guard let movedDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else {
+                break
+            }
+
+            currentDate = movedDate
+        }
+
+        // 데이터 추가하는 경우에만 정렬한다.
+        if didAppend {
+            state.model.sort { $0.date < $1.date }
+        }
+    }
+
+    private func makeDayModel(date: Date, now: Date, calendar: Calendar) -> DayModel {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "E"
+
+        let isFuture = calendar.compare(date, to: now, toGranularity: .day) == .orderedDescending
+
+        return DayModel(
+            date: date,
+            dayString: calendar.component(.day, from: date).description,
+            weekday: formatter.string(from: date),
+            isToday: calendar.isDate(date, inSameDayAs: now),
+            isSelected: false,
+            isFuture: isFuture,
+            isWritted: isFuture ? false : Bool.random()
+        )
     }
 }

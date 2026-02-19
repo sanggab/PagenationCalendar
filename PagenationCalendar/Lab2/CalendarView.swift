@@ -46,15 +46,45 @@ struct CalendarView: View {
 extension CalendarView {
     @ViewBuilder
     var headerView: some View {
-        HStack {
-            Text(store.currentTitle)
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(Color(hex: "222529"))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 20)
+        HStack(spacing: 6) {
+            currentTitle
+            
+            todayBtn
+            
+            Spacer()
         }
         .frame(height: 56)
         .frame(maxWidth: .infinity)
+    }
+    
+    @ViewBuilder
+    var currentTitle: some View {
+        Text(store.currentTitle)
+            .font(.system(size: 22, weight: .semibold))
+            .foregroundStyle(Color(hex: "222529"))
+            .padding(.leading, 20)
+    }
+    
+    @ViewBuilder
+    var todayBtn: some View {
+        Button {
+            store.send(.view(.todayTapped))
+        } label: {
+            HStack(spacing: 4) {
+                Group {
+                    Image("icon-reset")
+                        .renderingMode(.template)
+                    
+                    Text("오늘")
+                        .font(.system(size: 14, weight: .medium))
+                }
+                .foregroundStyle(Color(hex: "41474e"))
+            }
+            .transaction { transaction in transaction.animation = nil }
+        }
+        .frame(width: 65, height: 28)
+        .background(Color(hex: "eff1f4"))
+        .clipShape(RoundedRectangle(cornerRadius: 15))
     }
 }
 
@@ -213,3 +243,4 @@ extension CalendarView {
         )
     )
 }
+
