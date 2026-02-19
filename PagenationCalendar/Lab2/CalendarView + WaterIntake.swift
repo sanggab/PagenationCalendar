@@ -16,16 +16,9 @@ extension CalendarView {
     var hydrationTrackerView: some View {
         ZStack {
             waterIntakeView
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
-                .padding(.horizontal, 16)
         }
-        .frame(height: 360)
         .containerRelativeFrame(.horizontal)
         .background(.purple)
-        .padding(.bottom ,4)
     }
 }
 
@@ -40,6 +33,11 @@ extension CalendarView {
             
             waterIntakeStatusView
         }
+        .padding(.vertical, 35.5)
+        .frame(width: cellWidth)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
     }
     
     @ViewBuilder
@@ -70,6 +68,7 @@ extension CalendarView {
                     )
                 )
             }
+            .frame(height: 45)
     }
     
     @ViewBuilder
@@ -81,7 +80,8 @@ extension CalendarView {
             
             increaseWaterIntakeBtn
         }
-        .padding(.top, 4)
+        .padding(.top, 4) // toolTip의 StrokeStyle lienWidth 값
+        .padding(.horizontal, 8)
     }
     
     @ViewBuilder
@@ -91,7 +91,7 @@ extension CalendarView {
             .contentTransition(.numericText(value: store.currentWaterIntake))
             .animation(.snappy, value: store.currentWaterIntake)
             .animation(.snappy, value: store.totalWaterIntakeGoal)
-        .frame(height: 36)
+            .frame(height: 36)
     }
 }
 // MARK: 음수량 증가 / 감소 버튼
@@ -165,7 +165,9 @@ extension CalendarView {
     }
     
     private var waveVerticalOffset: CGFloat {
-        (1.0 - waterFillRatio) * cupFrameSize.height
+        let offset = (1.0 - waterFillRatio) * cupFrameSize.height
+        print("상갑 logEvent \(#function) offset \(offset)")
+        return offset
     }
 
     private var waterFillRatio: CGFloat {

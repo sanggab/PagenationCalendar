@@ -18,7 +18,6 @@ extension CalendarView {
             
             nutrientAnalysisView
         }
-        .frame(height: 360)
         .containerRelativeFrame(.horizontal)
         .background(.blue)
     }

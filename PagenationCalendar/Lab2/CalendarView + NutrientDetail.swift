@@ -20,7 +20,6 @@ extension CalendarView {
                 .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
                 .padding(.horizontal, 16)
         }
-        .frame(height: 360)
         .containerRelativeFrame(.horizontal)
         .background(.purple)
     }
@@ -34,7 +33,6 @@ extension CalendarView {
             
             otherNutrientList
         }
-//        .background(.mint)
         .padding(.top, 20)
         .padding(.bottom, 24)
         .padding(.horizontal, 16)
@@ -81,7 +79,7 @@ extension CalendarView {
                     
                     intakeProgressBar(type: nutrient)
                 }
-                
+                .frame(height: 44)
             }
         }
     }

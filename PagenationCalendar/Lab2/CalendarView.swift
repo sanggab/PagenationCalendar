@@ -166,8 +166,8 @@ extension CalendarView {
             pageNationView
         }
         .frame(height: 386)
-        .padding(.top, 20)
         .background(.pink)
+        .padding(.top, 16)
     }
 }
 
@@ -185,6 +185,7 @@ extension CalendarView {
         }
         .scrollTargetBehavior(.paging)
         .background(.orange)
+        .frame(height: 360)
     }
     
     @ViewBuilder
