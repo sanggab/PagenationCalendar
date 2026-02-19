@@ -175,24 +175,33 @@ extension CalendarView {
     @ViewBuilder
     var infinityScrollView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
+            LazyHStack(spacing: 0) {
                 nutrientDashboardCard
+                    .id(0)
                 
                 otherNutrientIntakeSummary
-
+                    .id(1)
+                
                 hydrationTrackerView
+                    .id(2)
             }
+            .scrollTargetLayout()
         }
         .scrollTargetBehavior(.paging)
+        .scrollPosition(id: Binding(
+            get: { store.currentDashboardPage },
+            set: { store.send(.view(.dashboardPageChanged($0))) }
+        ))
         .background(.orange)
         .frame(height: 360)
     }
     
     @ViewBuilder
     var pageNationView: some View {
-        Rectangle()
-            .fill(.mint)
-            .frame(width: 30, height: 6)
+        PageControl(
+            numberOfPages: store.totalDashboardPage,
+            currentPage: store.currentDashboardPage ?? 0
+        )
     }
 }
 

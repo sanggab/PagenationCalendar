@@ -28,6 +28,9 @@ struct CalendarReducer {
         var currentTitle: String = ""
         var currentScrollID: DayModel.ID?
         
+        var totalDashboardPage: Int = 3
+        var currentDashboardPage: Int? = 0
+        
         var weekdays: [String] = []
         
         var carbs = NutrientData(type: .carbohydrate, value: 0, goal: 300)
@@ -68,6 +71,7 @@ struct CalendarReducer {
             case dayTapped(DayModel)
             case weekdayHeaderTapped(Int)
             case changeNutrient(NutrientType)
+            case dashboardPageChanged(Int?)
             case increaseWaterIntake
             case decreaseWaterIntake
         }

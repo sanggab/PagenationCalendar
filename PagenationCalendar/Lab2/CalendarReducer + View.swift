@@ -26,6 +26,9 @@ extension CalendarReducer {
             
         case .changeNutrient(let type):
             return viewChangeNutrient(&state, type: type)
+
+        case .dashboardPageChanged(let page):
+            return viewDashboardPageChanged(&state, page: page)
             
         case .increaseWaterIntake:
             return viewIncreaseWaterIntake(&state)
@@ -127,6 +130,13 @@ extension CalendarReducer {
         
         // 4. 해당 날짜를 탭한 것과 동일한 로직을 수행한다.
         return viewDayTappedAction(&state, model: targetModel)
+    }
+}
+
+extension CalendarReducer {
+    func viewDashboardPageChanged(_ state: inout CalendarReducer.State, page: Int?) -> Effect<Action> {
+        state.currentDashboardPage = page
+        return .none
     }
 }
 
