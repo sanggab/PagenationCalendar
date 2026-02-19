@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EC85E4B51FBCC48FA504EA26 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6AB218E2D7351400DC6FD132 /* Lottie */; };
 		BA4901E9BBC7B89522792B6D /* SwiftUIToolTip in Frameworks */ = {isa = PBXBuildFile; productRef = 77C794B8A23633CC5F3E6E8B /* SwiftUIToolTip */; };
+		EC85E4B51FBCC48FA504EA26 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6AB218E2D7351400DC6FD132 /* Lottie */; };
 		EFB7B88D2F346989008D1FAB /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 390645A1FF3B77E106F716CC /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
@@ -640,20 +640,20 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		FF74F9656164295163375FA2 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.6.0;
-			};
-		};
 		B121772BD60C2EE749452A0A /* XCRemoteSwiftPackageReference "SwiftUIToolTip" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sanggab/SwiftUIToolTip.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.3.0;
+			};
+		};
+		FF74F9656164295163375FA2 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

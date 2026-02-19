@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+import Lottie
 import SwiftUIToolTip
 import ComposableArchitecture
 
@@ -83,11 +84,32 @@ extension CalendarView {
             .background(Color(hex: "f8f9fa"))
             .clipShape(RoundedRectangle(cornerRadius: 18))
             
-            Image("img-water-cup")
-                .padding(.vertical, 20)
-                .padding(.horizontal, 36)
-                .background(.pink)
-            
+            ZStack {
+                cupImage
+                
+                LottieView(animation: .named("water_wave"))
+                    .resizable()
+                    .configure(\.contentMode, to: .scaleToFill)
+                    .looping()
+                    .frame(width: 128, height: 160)
+                    .offset(y: waveVerticalOffset)
+                    .mask {
+                        cupImage
+                    }
+                    .animation(
+                        .timingCurve(
+                            0.0,
+                            0.0,
+                            0.58,
+                            1.0,
+                            duration: 0.3
+                        ),
+                        value: waveVerticalOffset
+                    )
+            }
+            .padding(.vertical, 20)
+            .padding(.horizontal, 36)
+                        
             Button {
                 store.send(.view(.increaseWaterIntake))
             } label: {
@@ -112,6 +134,38 @@ extension CalendarView {
 }
 
 extension CalendarView {
+    private var cupFrameSize: CGSize {
+        CGSize(width: 128, height: 160)
+    }
+
+    private var waveVisibleHeight: CGFloat {
+        guard waterFillRatio > 0 else { return 0 }
+
+        return min(cupFrameSize.height, (cupFrameSize.height * waterFillRatio) + waveCrestHeadroom)
+    }
+
+    private var waveCrestHeadroom: CGFloat {
+        6
+    }
+
+    private var waveVerticalOffset: CGFloat {
+        (1.0 - waterFillRatio) * cupFrameSize.height
+    }
+
+    private var cupImage: some View {
+        Image("img-water-cup")
+            .resizable()
+            .scaledToFit()
+            .frame(width: cupFrameSize.width, height: cupFrameSize.height)
+    }
+
+    private var waterFillRatio: CGFloat {
+        guard store.totalWaterIntakeGoal > 0 else { return 0 }
+
+        let ratio = store.currentWaterIntake / store.totalWaterIntakeGoal
+        return CGFloat(max(0, min(1, ratio)))
+    }
+
     private var waterIntakeNumberFormat: FloatingPointFormatStyle<Double> {
         .number.precision(.fractionLength(1...2))
     }

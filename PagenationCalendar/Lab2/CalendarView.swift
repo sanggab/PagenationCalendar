@@ -15,7 +15,6 @@ struct CalendarView: View {
     var cellWidth: CGFloat {
         (UIScreen.main.bounds.width - 32)
     }
-    
     @Namespace var anim
     
     
