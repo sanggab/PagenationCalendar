@@ -39,7 +39,6 @@ extension CalendarView {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
         .padding(.horizontal, 16)
-//        .background(.mint)
     }
 }
 
