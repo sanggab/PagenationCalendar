@@ -177,7 +177,7 @@ extension CalendarView {
         ScrollView(.vertical) {
             VStack(spacing: 20) {
                 dailyHealthDashBoard
-                    .background(.mint)
+//                    .background(.mint)
                 
                 dietHistoryList
             }
@@ -189,13 +189,13 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var dailyHealthDashBoard: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 12) {
             infinityScrollView
             
             pageNationView
         }
-        .frame(height: 386)
-        .padding(.top, 16)
+        .frame(height: 410)
+//        .padding(.top, 16)
     }
 }
 
@@ -214,13 +214,14 @@ extension CalendarView {
                 }
             }
             .scrollTargetLayout()
+            .padding(.vertical, 16)
         }
         .scrollTargetBehavior(.paging)
         .scrollPosition(id: Binding(
             get: { store.currentDashboardScrollPosition },
             set: { store.send(.view(.dashboardPageChanged($0))) }
         ))
-        .frame(height: 360)
+        .frame(height: 392)
     }
     
     @ViewBuilder

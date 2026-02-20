@@ -86,6 +86,7 @@ struct CalendarReducer {
             case dashboardPageChanged(Int?)
             case increaseWaterIntake
             case decreaseWaterIntake
+            case dietRowDeleteTapped(Int)
         }
         
         @CasePathable
