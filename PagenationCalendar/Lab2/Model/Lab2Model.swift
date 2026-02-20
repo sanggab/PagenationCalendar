@@ -112,10 +112,3 @@ enum DashboardSection: Int, Equatable, Identifiable, CaseIterable {
     
     var id: Int { self.rawValue }
 }
-
-struct DietCardMoel: Identifiable, Sendable, Equatable {
-    let id = UUID()
-    
-    var type: NutrientData
-    var foodTitle: String
-}

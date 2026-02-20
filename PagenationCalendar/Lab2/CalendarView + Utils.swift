@@ -71,3 +71,13 @@ extension Array {
         }
     }
 }
+
+extension Date {
+    var toKoreanTime: String {
+        let displayFormatter = DateFormatter()
+        displayFormatter.locale = Locale(identifier: "ko_KR")
+        displayFormatter.dateFormat = "a h:mm"
+
+        return displayFormatter.string(from: self)
+    }
+}

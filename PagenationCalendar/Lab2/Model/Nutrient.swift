@@ -254,7 +254,7 @@ extension DietFood {
             ),
             dietDate: "2026-02-10 12:33:32",
             dietFoodCount: 3,
-            dietImageName: "sample_pork_belly",
+            dietImageName: "https://contents-cdn.viewus.co.kr/image/2025/06/CP-2025-0008/image-3ad12b2e-1b73-4430-84bb-cb9c20cf862b.jpeg",
             dietHeaderName: "삼겹살"
         ),
         
@@ -278,7 +278,7 @@ extension DietFood {
             ),
             dietDate: "2026-02-10 11:32:00",
             dietFoodCount: 1,
-            dietImageName: "sample_strawberry_pudding",
+            dietImageName: "https://recipe1.ezmember.co.kr/cache/recipe/2017/07/25/547942879fd658fb0ac5d6e0d8e9b8dd1.png",
             dietHeaderName: "딸기 푸딩"
         ),
         
@@ -302,7 +302,7 @@ extension DietFood {
             ),
             dietDate: "2026-02-10 10:40:00",
             dietFoodCount: 4,
-            dietImageName: "sample_pasta",
+            dietImageName: "https://recipe1.ezmember.co.kr/cache/recipe/2020/05/10/52a43b19e57b1d911a0e2784afc392f11.jpg",
             dietHeaderName: "뻬스까또레"
         ),
         

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BA4901E9BBC7B89522792B6D /* SwiftUIToolTip in Frameworks */ = {isa = PBXBuildFile; productRef = 77C794B8A23633CC5F3E6E8B /* SwiftUIToolTip */; };
+		300F8BF288E949139FC5BD61 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = CAD6F6B02F20463DA828FB7B /* Kingfisher */; };
 		EC85E4B51FBCC48FA504EA26 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 6AB218E2D7351400DC6FD132 /* Lottie */; };
 		EFB7B88D2F346989008D1FAB /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 390645A1FF3B77E106F716CC /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
@@ -59,6 +60,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EFB7B88D2F346989008D1FAB /* ComposableArchitecture in Frameworks */,
+				300F8BF288E949139FC5BD61 /* Kingfisher in Frameworks */,
 				EC85E4B51FBCC48FA504EA26 /* Lottie in Frameworks */,
 				BA4901E9BBC7B89522792B6D /* SwiftUIToolTip in Frameworks */,
 			);
@@ -122,6 +124,7 @@
 			name = PagenationCalendar;
 			packageProductDependencies = (
 				390645A1FF3B77E106F716CC /* ComposableArchitecture */,
+				CAD6F6B02F20463DA828FB7B /* Kingfisher */,
 				6AB218E2D7351400DC6FD132 /* Lottie */,
 				77C794B8A23633CC5F3E6E8B /* SwiftUIToolTip */,
 			);
@@ -207,6 +210,7 @@
 				236CC8EC384053A8F1DD5E59 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 				FF74F9656164295163375FA2 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				B121772BD60C2EE749452A0A /* XCRemoteSwiftPackageReference "SwiftUIToolTip" */,
+				1634C8BA14A24E8CB363295F /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EF29A58A2F34261400E6197C /* Products */;
@@ -640,6 +644,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		1634C8BA14A24E8CB363295F /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 		B121772BD60C2EE749452A0A /* XCRemoteSwiftPackageReference "SwiftUIToolTip" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sanggab/SwiftUIToolTip.git";
@@ -673,6 +685,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B121772BD60C2EE749452A0A /* XCRemoteSwiftPackageReference "SwiftUIToolTip" */;
 			productName = SwiftUIToolTip;
+		};
+		CAD6F6B02F20463DA828FB7B /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1634C8BA14A24E8CB363295F /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

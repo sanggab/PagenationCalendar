@@ -78,7 +78,6 @@ extension CalendarView {
     var nutrientGuidanceView: some View {
         HStack(spacing: 0) {
             calorieGuideTextView
-            
         }
         .frame(height: 48)
         .frame(maxWidth: .infinity)
