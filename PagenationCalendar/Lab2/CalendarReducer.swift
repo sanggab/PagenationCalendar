@@ -13,15 +13,6 @@ import ComposableArchitecture
 struct CalendarReducer {
     @ObservableState
     struct State: Equatable {
-//        var currentWeekDates: [CalendarItem] = []
-//        var selectedDate: Date = Date()
-//        var currentWeekStart: Date = Date().startOfWeek()
-        
-        // Scroll Paging Logic
-//        var focusedWeekOffset: Int = 0 // 0 means current week, -1 means last week
-//        var minWeekOffset: Int = -12 // Initial range
-//        var loadedWeeks: [Int: [CalendarItem]] = [:]
-        
         var calendar = Calendar.current
         
         var model: [DayModel] = []
@@ -70,6 +61,8 @@ struct CalendarReducer {
         var waterIntakeStep: Double = 0.25
         
         var waterIntakeGuideText: WaterIntakeGuildText = .emptyRecord
+        
+        var dietFoodList = DietFood.samples
         
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")

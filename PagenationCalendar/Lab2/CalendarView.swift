@@ -31,9 +31,6 @@ struct CalendarView: View {
             calendarView
             
             contentView
-            
-            Spacer()
-            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(hex: "f8f9fa"))
@@ -178,7 +175,12 @@ extension CalendarView {
     @ViewBuilder
     var contentView: some View {
         ScrollView(.vertical) {
-            dailyHealthDashBoard
+            VStack(spacing: 20) {
+                dailyHealthDashBoard
+                    .background(.mint)
+                
+                dietHistoryList
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

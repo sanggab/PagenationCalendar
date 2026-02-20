@@ -145,6 +145,8 @@ extension CalendarView {
                     ),
                     value: waveVerticalOffset
                 )
+            
+            cupOutLineImage
         }
         .padding(.vertical, 20)
         .padding(.horizontal, 36)
@@ -152,6 +154,13 @@ extension CalendarView {
     
     private var cupImage: some View {
         Image("img-water-cup")
+            .resizable()
+            .scaledToFit()
+            .frame(width: cupFrameSize.width, height: cupFrameSize.height)
+    }
+    
+    private var cupOutLineImage: some View {
+        Image("img-water-cup-outline")
             .resizable()
             .scaledToFit()
             .frame(width: cupFrameSize.width, height: cupFrameSize.height)
@@ -164,7 +173,8 @@ extension CalendarView {
     }
     
     private var waveVerticalOffset: CGFloat {
-        let offset = (1.0 - waterFillRatio) * cupFrameSize.height
+        let outlineBorderHeight: CGFloat = 8
+        let offset = (1.0 - waterFillRatio) * cupFrameSize.height - outlineBorderHeight
         print("상갑 logEvent \(#function) offset \(offset)")
         return offset
     }
