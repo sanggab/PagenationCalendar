@@ -62,7 +62,11 @@ struct CalendarReducer {
         
         var waterIntakeGuideText: WaterIntakeGuildText = .emptyRecord
         
-        var dietFoodList = DietFood.samples
+        var dietCards: IdentifiedArrayOf<DietCardReducer.State> = .init(
+            uniqueElements: DietFood.samples.map { DietCardReducer.State(dietFood: $0) }
+        )
+        
+        var activeDietSwipeCardID: DietFood.ID?
         
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
@@ -74,6 +78,7 @@ struct CalendarReducer {
     enum Action: Equatable {
         case view(ViewAction)
         case inner(InnerAction)
+        case scope(ScopeAction)
         
         @CasePathable
         enum ViewAction: Equatable {
@@ -86,12 +91,16 @@ struct CalendarReducer {
             case dashboardPageChanged(Int?)
             case increaseWaterIntake
             case decreaseWaterIntake
-            case dietRowDeleteTapped(Int)
         }
         
         @CasePathable
         enum InnerAction: Equatable {
             case determineWaterIntakeGuildText
+        }
+        
+        @CasePathable
+        enum ScopeAction: Equatable {
+            case dietCards(IdentifiedActionOf<DietCardReducer>)
         }
     }
     
@@ -100,6 +109,10 @@ struct CalendarReducer {
         CombineReducers {
             viewReducer
             innerReducer
+            scopeReducer
+        }
+        .forEach(\.dietCards, action: \.scope.dietCards) {
+            DietCardReducer()
         }
     }
 }
@@ -120,6 +133,26 @@ extension CalendarReducer {
             guard case let .inner(innerAction) = action else { return .none }
             
             return self.handleInnerAction(state: &state, action: innerAction)
+        }
+    }
+}
+
+extension CalendarReducer {
+    var scopeReducer: some ReducerOf<Self> {
+        CombineReducers {
+            dietCardReducer
+        }
+    }
+}
+
+extension CalendarReducer {
+    var dietCardReducer: some ReducerOf<Self> {
+        Reduce { state, action in
+            guard case let .scope(.dietCards(.element(_, action: .delegate(delegateAction)))) = action else {
+                return .none
+            }
+
+            return self.scopeDietCardDelegateAction(state: &state, action: delegateAction)
         }
     }
 }

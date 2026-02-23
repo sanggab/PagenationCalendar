@@ -38,9 +38,6 @@ extension CalendarReducer {
             
         case .decreaseWaterIntake:
             return viewDecreaseWaterIntakeAction(&state)
-
-        case .dietRowDeleteTapped(let id):
-            return viewDietRowDeleteTappedAction(&state, id: id)
         }
     }
 }
@@ -276,16 +273,6 @@ extension CalendarReducer {
     }
 }
 
-extension CalendarReducer {
-    func viewDietRowDeleteTappedAction(_ state: inout CalendarReducer.State, id: Int) -> Effect<Action> {
-        guard let targetIndex = state.dietFoodList.firstIndex(where: { $0.id == id }) else {
-            return .none
-        }
-
-        state.dietFoodList.remove(at: targetIndex)
-        return .none
-    }
-}
 // MARK: ViewAction의 Utils 모음
 extension CalendarReducer {
     private func formatTitle(date: Date, calendar: Calendar) -> String {

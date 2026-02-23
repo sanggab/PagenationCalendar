@@ -7,36 +7,25 @@
 
 import SwiftUI
 
+import ComposableArchitecture
 import Kingfisher
 
 struct DietCardView: View {
-    
-    let dietFood: DietFood
-    
-    static let initialDragOffset: CGFloat = -1234567
-    @GestureState var dragOffset: CGFloat = initialDragOffset
-    @State var anchor: CGFloat   = 0
-    @State var hoffset: CGFloat  = 0
-    var anchorWidth: CGFloat     = 80
-    var swipeTreshold: CGFloat   = 25
-    
-    var cellWidth: CGFloat {
-        (UIScreen.main.bounds.width - 32)
-    }
+    var store: StoreOf<DietCardReducer>
     
     var body: some View {
         GeometryReader { proxy in
             HStack(spacing: 0) {
                 HStack(spacing: 12) {
-                    dietCardLeftView(for: dietFood)
-                    dietCardRightView(for: dietFood)
+                    dietCardLeftView(for: store.dietFood)
+                    dietCardRightView(for: store.dietFood)
                 }
                 .padding(.all, 16)
                 .frame(width: proxy.size.width)
                 .background(.white)
                 
                 Button {
-                    
+                    _ = store.send(.view(.deleteTapped))
                 } label: {
                     VStack(spacing: 4) {
                         Image("icon-delete-fill")
@@ -53,12 +42,17 @@ struct DietCardView: View {
                 .background(Color(hex: "ff604b"))
             }
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .offset(x: hoffset)
+            .offset(x: store.hoffset)
             .simultaneousGesture(
                 DragGesture(minimumDistance: 20)
-                    .updating($dragOffset) { value, state, _ in
+                    .onChanged { value in
                         if abs(value.translation.width) > abs(value.translation.height) {
-                            state = value.translation.width
+                            _ = store.send(.view(.horizontalDragChanged(value.translation.width)))
+                        }
+                    }
+                    .onEnded { _ in
+                        withAnimation(store.rightPast ? leftAnimation() : rightAnimation()) {
+                            _ = store.send(.view(.dragEnded))
                         }
                     }
             )
@@ -71,8 +65,10 @@ struct DietCardView: View {
                 .clipShape(.rect(bottomTrailingRadius: 16, topTrailingRadius: 16))
         }
         .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
-        .onChange(of: dragOffset) { oldValue, newValue in
-            onGesture(newValue)
+        .onChange(of: store.activeSwipeDietFoodID) { _, newValue in
+            withAnimation(rightAnimation()) {
+                _ = store.send(.view(.syncActiveSwipeCardID(newValue)))
+            }
         }
     }
 }
@@ -196,36 +192,6 @@ extension DietCardView {
         }
     }
     
-    func onGesture(_ value: CGFloat) {
-        if dragOffset != Self.initialDragOffset {
-            print("상갑 logEvent \(#function) value \(value)")
-            
-            withAnimation(.linear(duration: 0.1)) {
-                hoffset = anchor + value
-                
-                if hoffset > 0 {
-                    hoffset = 0
-                }
-                
-                if -hoffset > anchorWidth {
-                    hoffset = -anchorWidth
-//                    if rightPast {
-//                        hoffset = -anchorWidth
-//                    }
-                }
-                
-                if anchor < 0 {
-//                    rightPast = hoffset < -anchorWidth + swipeTreshold
-                } else {
-//                    rightPast = hoffset < -swipeTreshold
-                }
-            }
-            
-        } else { // 오류나 이것저것 기타등등으로 인해 onEnded가 실행되지 않았을 때 처리
-//            onEndGesture()
-        }
-    }
-    
     func leftAnimation() -> Animation {
         Animation.timingCurve(0, 0, 0.58, 1, duration: 0.3)
     }
@@ -233,10 +199,6 @@ extension DietCardView {
     func rightAnimation() -> Animation {
         Animation.timingCurve(0, 0, 0.58, 1, duration: 0.5)
     }
-}
-
-extension DietCardView {
-    
 }
 
 
@@ -260,6 +222,9 @@ extension DietCardView {
 }
 
 #Preview {
-    DietCardView(dietFood: DietFood.samples.randomElement()!)
-    DietCardView(dietFood: DietFood.samples.randomElement()!)
+    let sample = DietFood.samples.randomElement()!
+
+    DietCardView(
+        store: .init(initialState: DietCardReducer.State(dietFood: sample), reducer: { DietCardReducer() })
+    )
 }
