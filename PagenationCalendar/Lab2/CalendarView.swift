@@ -127,7 +127,7 @@ extension CalendarView {
         let fullWeeks = Array(store.model.prefix(weekCount * 7))
         let weeks = fullWeeks.chunked(into: 7)
         
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal) {
             VStack(spacing: 0) {
                 LazyHStack(alignment: .top, spacing: 0) {
                     
@@ -146,6 +146,7 @@ extension CalendarView {
                 .scrollTargetLayout()
             }
         }
+        .scrollIndicators(.hidden)
         .scrollTargetBehavior(.paging)
         .defaultScrollAnchor(.trailing)
         .scrollPosition(id: Binding(
@@ -191,6 +192,7 @@ extension CalendarView {
                 dietHistoryList
             }
         }
+        .scrollIndicators(.hidden)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
@@ -214,7 +216,7 @@ extension CalendarView {
         // 1) 실제 3페이지를 여러 사이클로 반복 렌더한다.
         // 2) 사용자가 넘길 때마다 "스크롤 인덱스"는 계속 증가/감소한다.
         // 3) 리듀서에서 가장자리 접근 시 중앙으로 재배치해 끝이 없는 것처럼 유지한다.
-        ScrollView(.horizontal, showsIndicators: false) {
+        ScrollView(.horizontal) {
             LazyHStack(spacing: 0) {
                 ForEach(0..<store.totalDashboardScrollableItemCount, id: \.self) { index in
                     dashboardCardView(for: dashboardPageIndex(forInfiniteIndex: index))
@@ -224,6 +226,7 @@ extension CalendarView {
             .scrollTargetLayout()
             .padding(.vertical, 16)
         }
+        .scrollIndicators(.hidden)
         .scrollTargetBehavior(.paging)
         .scrollPosition(id: Binding(
             get: { store.currentDashboardScrollPosition },

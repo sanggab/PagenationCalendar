@@ -23,11 +23,7 @@ struct NutrientDetailView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.gray)
-    //
-    //            boundray
-    //
-    //            foodList
+                .scrollIndicators(.hidden)
             }
         }
     }
@@ -42,7 +38,6 @@ extension NutrientDetailView {
             } label: {
                 Image("icon-arrow-left")
                     .padding(.all, 8)
-                    .background(.mint)
             }
             
             Text("탄수화물")
@@ -53,7 +48,6 @@ extension NutrientDetailView {
         }
         .frame(height: 40)
         .padding(.vertical, 8)
-        .background(.blue)
         .padding(.leading, 8)
         .padding(.trailing ,12)
     }
@@ -68,14 +62,12 @@ extension NutrientDetailView {
                 remainingAmountText: "200g"
             )
                 .frame(width: 120, height: 120)
-                .background(.pink)
             
             nutrientIntakeStatus
             
             Spacer()
                 .frame(height: 8)
         }
-        .background(.purple)
     }
     
     @ViewBuilder
@@ -85,32 +77,41 @@ extension NutrientDetailView {
                 Text("권장 섭취량")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color(hex: "2d3238"))
+                    .frame(height: 20)
                 
                 Text("200g")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(Color(hex: "121416"))
+                    .frame(height: 22)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(Color(hex: "e2e5e9"), lineWidth: 1) }
+            .overlay {
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Color(hex: "e2e5e9"), lineWidth: 1)
+            }
             
             VStack(spacing: 2) {
                 Text("권장 섭취량")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color(hex: "2d3238"))
+                    .frame(height: 20)
                 
                 Text("200g")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(Color(hex: "121416"))
+                    .frame(height: 22)
             }
-//            .containerRelativeFrame(.horizontal, count: 2, spacing: 32)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background(.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(Color(hex: "e2e5e9"), lineWidth: 1) }
+            .overlay {
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Color(hex: "e2e5e9"), lineWidth: 1)
+            }
         }
         .padding(.horizontal, 16)
     }
@@ -135,7 +136,6 @@ extension NutrientDetailView {
         }
         .padding(.vertical, 24)
         .padding(.horizontal, 16)
-        .background(.mint)
     }
     
     @ViewBuilder
@@ -168,7 +168,6 @@ extension NutrientDetailView {
                             .foregroundStyle(Color(hex: "525960"))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.blue)
                     
                     Text("60 g")
                         .font(.system(size: 16, weight: .medium))
@@ -176,7 +175,6 @@ extension NutrientDetailView {
                         .frame(width: 76, alignment: .trailing)
                 }
                 .padding(.vertical, 12)
-                .background(.pink)
                 
                 if index != (list.count - 1) {
                     Rectangle()

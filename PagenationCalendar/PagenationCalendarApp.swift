@@ -19,12 +19,6 @@ struct PagenationCalendarApp: App {
                     reducer: { CalendarReducer() }
                 )
             )
-//            ContentView(
-//                store: Store(
-//                    initialState: MainReducer.State(),
-//                    reducer: { MainReducer() }
-//                )
-//            )
         }
     }
 }
