@@ -65,6 +65,10 @@ struct CalendarReducer {
         var dietCards: IdentifiedArrayOf<DietCardReducer.State> = .init(
             uniqueElements: DietFood.samples.map { DietCardReducer.State(dietFood: $0) }
         )
+
+        var shouldShowDietCardAddButton: Bool {
+            dietCards.isEmpty
+        }
         
         var activeDietSwipeCardID: DietFood.ID?
         

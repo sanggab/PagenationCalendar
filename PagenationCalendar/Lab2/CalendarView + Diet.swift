@@ -14,8 +14,12 @@ extension CalendarView {
     var dietHistoryList: some View {
         VStack(spacing: 12) {
             dietHistoryTitle
-            dietCardAddBtn
-//            dietCardList
+
+            if store.shouldShowDietCardAddButton {
+                dietCardAddBtn
+            } else {
+                dietCardList
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
