@@ -1,52 +1,83 @@
 //
-//  CalendarView + Diet.swift
+//  DietCardView.swift
 //  PagenationCalendar
 //
-//  Created by Gab on 2/20/26.
+//  Created by Gab on 2/23/26.
 //
 
 import SwiftUI
 
-import ComposableArchitecture
 import Kingfisher
 
-extension CalendarView {
-    @ViewBuilder
-    var dietHistoryList: some View {
-        VStack(spacing: 12) {
-            dietHistoryTitle
-            dietCardList
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.mint)
-    }
-}
-
-
-extension CalendarView {
-    @ViewBuilder
-    var dietHistoryTitle: some View {
-        HStack(spacing: 0) {
-            Text("식단")
-                .font(.system(size: 20, weight: .bold))
-            
-            Spacer()
-        }
-        .background(.orange)
-        .padding(.horizontal, 16)
-    }
-}
-
-extension CalendarView {
-    @ViewBuilder
-    var dietCardList: some View {
-        LazyVStack(spacing: 12) {
-            ForEach(store.dietFoodList) { food in
-                DietCardView(dietFood: food)
-            }
-        }
+struct DietCardView: View {
+    
+    let dietFood: DietFood
+    
+    static let initialDragOffset: CGFloat = -1234567
+    @GestureState var dragOffset: CGFloat = initialDragOffset
+    @State var anchor: CGFloat   = 0
+    @State var hoffset: CGFloat  = 0
+    var anchorWidth: CGFloat     = 80
+    var swipeTreshold: CGFloat   = 25
+    
+    var cellWidth: CGFloat {
+        (UIScreen.main.bounds.width - 32)
     }
     
+    var body: some View {
+        GeometryReader { proxy in
+            HStack(spacing: 0) {
+                HStack(spacing: 12) {
+                    dietCardLeftView(for: dietFood)
+                    dietCardRightView(for: dietFood)
+                }
+                .padding(.all, 16)
+                .frame(width: proxy.size.width)
+                .background(.white)
+                
+                Button {
+                    
+                } label: {
+                    VStack(spacing: 4) {
+                        Image("icon-delete-fill")
+                            .renderingMode(.template)
+                            .foregroundStyle(.white)
+                        
+                        Text("삭제")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(width: 80)
+                .frame(height: 112)
+                .background(Color(hex: "ff604b"))
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .offset(x: hoffset)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 20)
+                    .updating($dragOffset) { value, state, _ in
+                        if abs(value.translation.width) > abs(value.translation.height) {
+                            state = value.translation.width
+                        }
+                    }
+            )
+        }
+        .frame(height: 112)
+        .padding(.horizontal, 16)
+        .mask(alignment: .leading) {
+            Rectangle()
+                .frame(width: UIScreen.main.bounds.width - 16, height: 112)
+                .clipShape(.rect(bottomTrailingRadius: 16, topTrailingRadius: 16))
+        }
+        .shadow(color: Color(hex: "14121416"), radius: 10, x: 0, y: 1)
+        .onChange(of: dragOffset) { oldValue, newValue in
+            onGesture(newValue)
+        }
+    }
+}
+
+extension DietCardView {
     @ViewBuilder
     func dietCardRow(for model: DietFood) -> some View {
         HStack(spacing: 12) {
@@ -92,8 +123,12 @@ extension CalendarView {
                 KFImage(URL(string: url))
                     .resizable()
             } else {
-                Image("img-default")
-                    .resizable()
+                Rectangle()
+                    .fill(Color(hex: "eff1f4"))
+                    .overlay {
+                        Image("img-default")
+                            .resizable()
+                    }
             }
         }
         .frame(width: 80, height: 80)
@@ -160,9 +195,52 @@ extension CalendarView {
             }
         }
     }
+    
+    func onGesture(_ value: CGFloat) {
+        if dragOffset != Self.initialDragOffset {
+            print("상갑 logEvent \(#function) value \(value)")
+            
+            withAnimation(.linear(duration: 0.1)) {
+                hoffset = anchor + value
+                
+                if hoffset > 0 {
+                    hoffset = 0
+                }
+                
+                if -hoffset > anchorWidth {
+                    hoffset = -anchorWidth
+//                    if rightPast {
+//                        hoffset = -anchorWidth
+//                    }
+                }
+                
+                if anchor < 0 {
+//                    rightPast = hoffset < -anchorWidth + swipeTreshold
+                } else {
+//                    rightPast = hoffset < -swipeTreshold
+                }
+            }
+            
+        } else { // 오류나 이것저것 기타등등으로 인해 onEnded가 실행되지 않았을 때 처리
+//            onEndGesture()
+        }
+    }
+    
+    func leftAnimation() -> Animation {
+        Animation.timingCurve(0, 0, 0.58, 1, duration: 0.3)
+    }
+    
+    func rightAnimation() -> Animation {
+        Animation.timingCurve(0, 0, 0.58, 1, duration: 0.5)
+    }
 }
 
-extension CalendarView {
+extension DietCardView {
+    
+}
+
+
+extension DietCardView {
     private var dietCardCaloriesNumberFormat: FloatingPointFormatStyle<Double> {
         .number.precision(.fractionLength(0))
     }
@@ -179,4 +257,9 @@ extension CalendarView {
         current += goal
         return current
     }
+}
+
+#Preview {
+    DietCardView(dietFood: DietFood.samples.randomElement()!)
+    DietCardView(dietFood: DietFood.samples.randomElement()!)
 }
