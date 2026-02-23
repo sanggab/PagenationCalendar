@@ -18,6 +18,13 @@ struct CalendarView: View {
     
     @Namespace var anim
     
+    static let initialDragOffset: CGFloat = -1234567
+    @GestureState var dragOffset: CGFloat = initialDragOffset
+    @State var anchor: CGFloat   = 0
+    @State var hoffset: CGFloat  = 0
+    var anchorWidth: CGFloat     = 80
+    var swipeTreshold: CGFloat   = 25
+    
     
     // MARK: - View
     var body: some View {

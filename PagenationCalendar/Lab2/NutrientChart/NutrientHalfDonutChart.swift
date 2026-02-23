@@ -233,10 +233,12 @@ struct NutrientHalfDonutChart: View {
             alignment: .top
         )
         .overlay(alignment: .bottom) {
-            Text("\(Int(data.totalCaloriesGoal))")
+            Text("\(Int(data.totalCaloriesConsumed))")
                 .font(.system(size: 34, weight: .bold))
-                .frame(height: 48)
                 .foregroundStyle(Color(hex: "121416"))
+                .contentTransition(.numericText(value: data.totalCaloriesConsumed))
+                .animation(.snappy, value: data.totalCaloriesConsumed)
+                .frame(height: 48)
         }
         .clipped()
     }
