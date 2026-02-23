@@ -69,6 +69,14 @@ struct CalendarReducer {
         var shouldShowDietCardAddButton: Bool {
             dietCards.isEmpty
         }
+
+        var shouldShowTodayButton: Bool {
+            guard let selectedDate = model.first(where: { $0.isSelected })?.date else {
+                return false
+            }
+
+            return !calendar.isDateInToday(selectedDate)
+        }
         
         var activeDietSwipeCardID: DietFood.ID?
         

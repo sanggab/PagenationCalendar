@@ -52,8 +52,10 @@ extension CalendarView {
     var headerView: some View {
         HStack(spacing: 6) {
             currentTitle
-            
-            todayBtn
+
+            if store.shouldShowTodayButton {
+                todayBtn
+            }
             
             Spacer()
         }
