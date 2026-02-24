@@ -67,7 +67,7 @@ enum NutrientType: String, CaseIterable, Identifiable, Equatable {
         case .fat: 80
         case .sodium: 0
         case .sugars: 0
-        case .fiber: 80
+        case .fiber: 100
         case .cholesterol: 0
         }
     }
