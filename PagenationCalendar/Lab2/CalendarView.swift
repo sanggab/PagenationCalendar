@@ -11,20 +11,14 @@ import ComposableArchitecture
 
 struct CalendarView: View {
     var store: StoreOf<CalendarReducer>
+
+    @State private var contentVerticalOffset: CGFloat = 0
     
     var cellWidth: CGFloat {
         (UIScreen.main.bounds.width - 32)
     }
     
     @Namespace var anim
-    
-    static let initialDragOffset: CGFloat = -1234567
-    @GestureState var dragOffset: CGFloat = initialDragOffset
-    @State var anchor: CGFloat   = 0
-    @State var hoffset: CGFloat  = 0
-    var anchorWidth: CGFloat     = 80
-    var swipeTreshold: CGFloat   = 25
-    
     
     // MARK: - View
     var body: some View {
@@ -73,6 +67,25 @@ struct CalendarView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(hex: "f8f9fa"))
+        .overlay(alignment: .bottomTrailing) {
+            scrollToTopBtn
+        }
+    }
+    
+    @ViewBuilder
+    var scrollToTopBtn: some View {
+        Button {
+            
+        } label: {
+            Circle()
+                .fill(.white)
+                .frame(width: 40, height: 40)
+                .overlay {
+                    Image("icon-arrow-up")
+                }
+                .overlay(Circle().strokeBorder(Color(hex: "eff1f4"), lineWidth: 1))
+                .padding(.all, 10)
+        }
     }
 }
 
@@ -214,15 +227,43 @@ extension CalendarView {
     @ViewBuilder
     var contentView: some View {
         ScrollView(.vertical) {
-            VStack(spacing: 20) {
-                dailyHealthDashBoard
-//                    .background(.mint)
+            ZStack(alignment: .top) {
+                CalendarContentOffsetProbe()
+                    .zIndex(1)
                 
-                dietHistoryList
+                VStack(spacing: 20) {
+                    dailyHealthDashBoard
+                    
+                    dietHistoryList
+                }
             }
+        }
+        .coordinateSpace(.scrollView)
+        .onPreferenceChange(CalendarContentScrollOffsetKey.self) { offset in
+            
         }
         .scrollIndicators(.hidden)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct CalendarContentScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+private struct CalendarContentOffsetProbe: View {
+    var body: some View {
+        GeometryReader { geometry in
+            Color.clear.preference(
+                key: CalendarContentScrollOffsetKey.self,
+                value: geometry.frame(in: .scrollView).minY
+            )
+        }
+        .frame(height: 0)
     }
 }
 

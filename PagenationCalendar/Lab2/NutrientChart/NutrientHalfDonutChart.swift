@@ -105,15 +105,6 @@ struct NutrientData: Identifiable, Equatable {
     var value: Double // current intake in grams
     let goal: Double // goal in grams
     
-    // Helper for calories (approximate: C=4, P=4, F=9)
-//    var calories: Double {
-//        let roundedValue = value.rounded()
-//        switch type {
-//        case .carbohydrate, .protein: return roundedValue * 4
-//        case .fat: return roundedValue * 9
-//        }
-//    }
-    
     var calories: Double {
         switch type {
         case .carbohydrate, .protein: return value * 4
