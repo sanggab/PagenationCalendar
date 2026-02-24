@@ -38,6 +38,12 @@ extension CalendarReducer {
 
         case .dashboardPageChanged(let page):
             return viewDashboardPageChangedAction(&state, page: page)
+
+        case .updateShowScrollToTopBtn(let isShow):
+            return viewUpdateShowScrollToTopBtn(&state, isShow: isShow)
+
+        case .scrollToTopButtonTapped:
+            return viewScrollToTopButtonTappedAction(&state)
             
         case .increaseWaterIntake:
             return viewIncreaseWaterIntakeAction(&state)
@@ -270,6 +276,18 @@ extension CalendarReducer {
             state.currentDashboardScrollPosition = state.dashboardCenterScrollPosition + normalizedPage
         }
 
+        return .none
+    }
+}
+
+extension CalendarReducer {
+    func viewUpdateShowScrollToTopBtn(_ state: inout CalendarReducer.State, isShow: Bool) -> Effect<Action> {
+        state.shouldShowScrollToTopButton = isShow
+        return .none
+    }
+
+    func viewScrollToTopButtonTappedAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
+        state.scrollToTopTrigger += 1
         return .none
     }
 }

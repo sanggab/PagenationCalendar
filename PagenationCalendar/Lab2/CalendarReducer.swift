@@ -89,6 +89,9 @@ struct CalendarReducer {
         var selectedNutrientPayload: SelectedNutrientPayload?
         var isNutrientDetailPresented: Bool = false
 
+        var scrollToTopTrigger: Int = 0
+        var shouldShowScrollToTopButton: Bool = false
+
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
             self.calendar.firstWeekday = 2
@@ -112,6 +115,8 @@ struct CalendarReducer {
             case nutrientDetailTapped(NutrientType)
             case nutrientDetailDismissed
             case dashboardPageChanged(Int?)
+            case updateShowScrollToTopBtn(Bool)
+            case scrollToTopButtonTapped
             case increaseWaterIntake
             case decreaseWaterIntake
         }

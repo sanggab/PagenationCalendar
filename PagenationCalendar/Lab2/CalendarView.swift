@@ -12,7 +12,7 @@ import ComposableArchitecture
 struct CalendarView: View {
     var store: StoreOf<CalendarReducer>
 
-    @State private var contentVerticalOffset: CGFloat = 0
+    private let contentTopAnchorID = "content-top-anchor"
     
     var cellWidth: CGFloat {
         (UIScreen.main.bounds.width - 32)
@@ -74,17 +74,19 @@ struct CalendarView: View {
     
     @ViewBuilder
     var scrollToTopBtn: some View {
-        Button {
-            
-        } label: {
-            Circle()
-                .fill(.white)
-                .frame(width: 40, height: 40)
-                .overlay {
-                    Image("icon-arrow-up")
-                }
-                .overlay(Circle().strokeBorder(Color(hex: "eff1f4"), lineWidth: 1))
-                .padding(.all, 10)
+        if store.shouldShowScrollToTopButton {
+            Button {
+                store.send(.view(.scrollToTopButtonTapped))
+            } label: {
+                Circle()
+                    .fill(.white)
+                    .frame(width: 40, height: 40)
+                    .overlay {
+                        Image("icon-arrow-up")
+                    }
+                    .overlay(Circle().strokeBorder(Color(hex: "eff1f4"), lineWidth: 1))
+                    .padding(.all, 10)
+            }
         }
     }
 }
@@ -226,24 +228,38 @@ extension CalendarView {
 extension CalendarView {
     @ViewBuilder
     var contentView: some View {
-        ScrollView(.vertical) {
-            ZStack(alignment: .top) {
-                CalendarContentOffsetProbe()
-                    .zIndex(1)
-                
-                VStack(spacing: 20) {
-                    dailyHealthDashBoard
-                    
-                    dietHistoryList
+        ScrollViewReader { proxy in
+            ScrollView(.vertical) {
+                ZStack(alignment: .top) {
+                    CalendarContentOffsetProbe()
+                        .zIndex(1)
+
+                    VStack(spacing: 20) {
+                        dailyHealthDashBoard
+
+                        dietHistoryList
+                    }
+                    .id(contentTopAnchorID)
                 }
             }
+            .coordinateSpace(.scrollView)
+            .onPreferenceChange(CalendarContentScrollOffsetKey.self) { offset in
+                let isShow: Bool = offset < 0
+                
+                guard store.shouldShowScrollToTopButton != isShow else {
+                    return
+                }
+                
+                store.send(.view(.updateShowScrollToTopBtn(isShow)))
+            }
+            .onChange(of: store.scrollToTopTrigger) { _, _ in
+                withAnimation(.snappy) {
+                    proxy.scrollTo(contentTopAnchorID, anchor: .top)
+                }
+            }
+            .scrollIndicators(.hidden)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .coordinateSpace(.scrollView)
-        .onPreferenceChange(CalendarContentScrollOffsetKey.self) { offset in
-            
-        }
-        .scrollIndicators(.hidden)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
