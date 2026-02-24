@@ -30,6 +30,12 @@ extension CalendarReducer {
         case .changeNutrient(let type):
             return viewChangeNutrientAction(&state, type: type)
 
+        case .nutrientDetailTapped(let nutrientType):
+            return viewNutrientDetailTappedAction(&state, type: nutrientType)
+
+        case .nutrientDetailDismissed:
+            return viewNutrientDetailDismissedAction(&state)
+
         case .dashboardPageChanged(let page):
             return viewDashboardPageChangedAction(&state, page: page)
             
@@ -103,7 +109,7 @@ extension CalendarReducer {
                 }
             }
         }
-//        print("상갑 logEvent Generated dates from \(gridStartDate) to \(gridEndDate), total: \(allDates.count)")
+        
         state.model = allDates
         
         // 타이틀 설정 (오늘 날짜 기준)
@@ -191,6 +197,19 @@ extension CalendarReducer {
     }
 }
 
+
+extension CalendarReducer {
+    func viewNutrientDetailTappedAction(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {
+        return .send(.inner(.prepareNutrientDetailPayload(nutrientType)))
+    }
+
+    func viewNutrientDetailDismissedAction(_ state: inout CalendarReducer.State) -> Effect<Action> {
+        state.isNutrientDetailPresented = false
+        state.selectedNutrientPayload = nil
+
+        return .none
+    }
+}
 
 extension CalendarReducer {
     func viewChangeNutrientAction(_ state: inout CalendarReducer.State, type nutrientType: NutrientType) -> Effect<Action> {

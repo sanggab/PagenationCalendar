@@ -7,7 +7,13 @@
 
 import SwiftUI
 
+import ComposableArchitecture
+
 struct NutrientDetailView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let store: StoreOf<NutrientDetailReducer>
+
     var body: some View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
@@ -26,6 +32,10 @@ struct NutrientDetailView: View {
                 .scrollIndicators(.hidden)
             }
         }
+        .navigationBarBackButtonHidden(true)
+        .task {
+            store.send(.view(.onAppear))
+        }
     }
 }
 
@@ -34,13 +44,13 @@ extension NutrientDetailView {
     var header: some View {
         HStack(spacing: 4) {
             Button {
-                
+                dismiss()
             } label: {
                 Image("icon-arrow-left")
                     .padding(.all, 8)
             }
-            
-            Text("탄수화물")
+
+            Text(store.nutrientType.rawValue)
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(Color(hex: "222529"))
             
@@ -58,8 +68,9 @@ extension NutrientDetailView {
     var nutrientIntakeSummary: some View {
         VStack(spacing: 16) {
             NutrientDetailProgressBar(
-                progress: 0.1,
-                remainingAmountText: "200g"
+                progress: store.detailUIModel.progressRatio,
+                remainingAmountText: store.detailUIModel.comparisonAmountText,
+                comparisonLabelText: store.detailUIModel.comparisonLabelText
             )
                 .frame(width: 120, height: 120)
             
@@ -79,7 +90,7 @@ extension NutrientDetailView {
                     .foregroundStyle(Color(hex: "2d3238"))
                     .frame(height: 20)
                 
-                Text("200g")
+                Text(store.detailUIModel.recommendedIntakeText)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(Color(hex: "121416"))
                     .frame(height: 22)
@@ -94,12 +105,12 @@ extension NutrientDetailView {
             }
             
             VStack(spacing: 2) {
-                Text("권장 섭취량")
+                Text("내 섭취량")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color(hex: "2d3238"))
                     .frame(height: 20)
                 
-                Text("200g")
+                Text(store.detailUIModel.actualIntakeText)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(Color(hex: "121416"))
                     .frame(height: 22)
@@ -131,8 +142,12 @@ extension NutrientDetailView {
     func foodList(_ proxy: GeometryProxy) -> some View {
         VStack(spacing: 8) {
             foodListTitle
-            
-            foodHistory
+
+            if store.foodRows.isEmpty {
+                noFoodHistory(proxy)
+            } else {
+                foodHistory
+            }
         }
         .padding(.vertical, 24)
         .padding(.horizontal, 16)
@@ -152,31 +167,31 @@ extension NutrientDetailView {
     
     @ViewBuilder
     var foodHistory: some View {
-        let list = ["1", "2", "3", "4", "5", "6", "7", "8"]
-        
         LazyVStack(alignment: .leading, spacing: 0) {
-            ForEach(Array(list).enumerated(), id: \.element) { index, string in
+            ForEach(store.foodRows.indices, id: \.self) { index in
+                let foodRow = store.foodRows[index]
+
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("삐쓰까또레부르쥬미첼라햄페스츄리치즈나쵸")
+                        Text(foodRow.foodName)
                             .font(.system(size: 16, weight: .medium))
                             .foregroundStyle(Color(hex: "2d3238"))
                             .multilineTextAlignment(.leading)
                         
-                        Text("총 내용량 420g")
+                        Text(foodRow.servingDescriptionText)
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(Color(hex: "525960"))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text("60 g")
+                    Text(foodRow.nutrientAmountText)
                         .font(.system(size: 16, weight: .medium))
                         .foregroundStyle(Color(hex: "121416"))
                         .frame(width: 76, alignment: .trailing)
                 }
                 .padding(.vertical, 12)
                 
-                if index != (list.count - 1) {
+                if index != (store.foodRows.count - 1) {
                     Rectangle()
                         .fill(Color(hex: "e2e5e9"))
                         .frame(height: 1)
@@ -188,16 +203,26 @@ extension NutrientDetailView {
     @ViewBuilder
     func noFoodHistory(_ proxy: GeometryProxy) -> some View {
         Rectangle()
-            .fill(.pink)
+            .fill(.clear)
             .frame(height: proxy.size.height - 345)
             .overlay {
                 Text("해당 영양소가 포함된 음식 기록이 없어요")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(Color(hex: "aab2bb"))
-            }
+        }
     }
 }
 
 #Preview {
-    NutrientDetailView()
+    NutrientDetailView(
+        store: Store(
+            initialState: NutrientDetailReducer.State(
+                nutrientType: .sodium,
+                nutrientData: NutrientData(type: .sodium, value: 120, goal: 80),
+                dietFoods: DietFood.samples.filter { $0.nutrition.sodiumMg > 0 }
+            )
+        ) {
+            NutrientDetailReducer()
+        }
+    )
 }

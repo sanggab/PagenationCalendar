@@ -13,6 +13,12 @@ import ComposableArchitecture
 struct CalendarReducer {
     @ObservableState
     struct State: Equatable {
+        struct SelectedNutrientPayload: Equatable {
+            let nutrientType: NutrientType
+            let nutrientData: NutrientData
+            let dietFoods: [DietFood]
+        }
+
         var calendar = Calendar.current
         
         var model: [DayModel] = []
@@ -79,7 +85,10 @@ struct CalendarReducer {
         }
         
         var activeDietSwipeCardID: DietFood.ID?
-        
+
+        var selectedNutrientPayload: SelectedNutrientPayload?
+        var isNutrientDetailPresented: Bool = false
+
         public init() {
             self.calendar.locale = Locale(identifier: "ko_KR")
             self.calendar.firstWeekday = 2
@@ -100,6 +109,8 @@ struct CalendarReducer {
             case dayTapped(DayModel)
             case weekdayHeaderTapped(Int)
             case changeNutrient(NutrientType)
+            case nutrientDetailTapped(NutrientType)
+            case nutrientDetailDismissed
             case dashboardPageChanged(Int?)
             case increaseWaterIntake
             case decreaseWaterIntake
@@ -108,6 +119,7 @@ struct CalendarReducer {
         @CasePathable
         enum InnerAction: Equatable {
             case determineWaterIntakeGuildText
+            case prepareNutrientDetailPayload(NutrientType)
         }
         
         @CasePathable

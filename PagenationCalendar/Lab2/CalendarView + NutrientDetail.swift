@@ -73,7 +73,7 @@ extension CalendarView {
                         nutrientIntakeStatusText(type: nutrient)
                     }
                     .onTapGesture {
-                        store.send(.view(.changeNutrient(nutrient)))
+                        store.send(.view(.nutrientDetailTapped(nutrient)))
                     }
                     
                     intakeProgressBar(type: nutrient)

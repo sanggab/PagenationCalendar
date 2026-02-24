@@ -10,6 +10,7 @@ import SwiftUI
 struct NutrientDetailProgressBar: View {
     let progress: CGFloat
     let remainingAmountText: String
+    let comparisonLabelText: String
 
     @State private var animatedProgress: CGFloat = 0
 
@@ -27,7 +28,7 @@ struct NutrientDetailProgressBar: View {
                     .font(.system(size: 24, weight: .bold))
                     .foregroundStyle(Color(hex: "121416"))
                 
-                Text("남은 양")
+                Text(comparisonLabelText)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(Color(hex: "2d3238"))
             }
@@ -63,6 +64,7 @@ struct NutrientDetailProgressBar: View {
 #Preview {
     NutrientDetailProgressBar(
         progress: 0.1,
-        remainingAmountText: "200g"
+        remainingAmountText: "200g",
+        comparisonLabelText: "남은 양"
     )
 }

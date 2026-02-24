@@ -28,22 +28,51 @@ struct CalendarView: View {
     
     // MARK: - View
     var body: some View {
-        VStack(spacing: 0) {
-            headerView
-            
-            Rectangle()
-                .fill(.clear)
-                .frame(height: 4)
-            
-            calendarView
-            
-            contentView
+        NavigationStack {
+            VStack(spacing: 0) {
+                headerView
+                
+                Rectangle()
+                    .fill(.clear)
+                    .frame(height: 4)
+                
+                calendarView
+                
+                contentView
+            }
+            .navigationDestination(
+                isPresented: Binding(
+                    get: { store.isNutrientDetailPresented },
+                    set: { isPresented in
+                        if !isPresented {
+                            store.send(.view(.nutrientDetailDismissed))
+                        }
+                    }
+                )
+            ) {
+                if let nutrientPayload = store.selectedNutrientPayload {
+                    NutrientDetailView(
+                        store: Store(
+                            initialState: NutrientDetailReducer.State(
+                                nutrientType: nutrientPayload.nutrientType,
+                                nutrientData: nutrientPayload.nutrientData,
+                                dietFoods: nutrientPayload.dietFoods
+                            )
+                        ) {
+                            NutrientDetailReducer()
+                        }
+                    )
+                } else {
+                    EmptyView()
+                }
+            }
+            .task {
+                print("상갑 logEvent \(#function)")
+                store.send(.view(.onAppear))
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(hex: "f8f9fa"))
-        .task {
-            store.send(.view(.onAppear))
-        }
     }
 }
 

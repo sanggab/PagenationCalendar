@@ -1,12 +1,3 @@
-//
-//  NutrientDetailReducer.swift
-//  PagenationCalendar
-//
-//  Created by Gab on 2/23/26.
-//
-
-import SwiftUI
-
 import SwiftUI
 
 import ComposableArchitecture
@@ -15,12 +6,37 @@ import ComposableArchitecture
 struct NutrientDetailReducer {
     @ObservableState
     struct State: Equatable {
-        
-        init() {
+        struct NutrientDetailUIModel: Equatable {
+            let recommendedIntakeText: String
+            let actualIntakeText: String
+            let comparisonAmountText: String
+            let comparisonLabelText: String
+            let progressRatio: CGFloat
 
+            static let empty = NutrientDetailUIModel(
+                recommendedIntakeText: "0g",
+                actualIntakeText: "0g",
+                comparisonAmountText: "0g",
+                comparisonLabelText: "남은 양",
+                progressRatio: 0
+            )
         }
+
+        struct NutrientDetailFoodRow: Equatable, Identifiable {
+            let id: DietFood.ID
+            let foodName: String
+            let servingDescriptionText: String
+            let nutrientAmountText: String
+        }
+
+        let nutrientType: NutrientType
+        let nutrientData: NutrientData
+        let dietFoods: [DietFood]
+
+        var detailUIModel: NutrientDetailUIModel = .empty
+        var foodRows: [NutrientDetailFoodRow] = []
     }
-    
+
     @CasePathable
     enum Action: Equatable {
         case view(ViewAction)
@@ -28,15 +44,15 @@ struct NutrientDetailReducer {
         
         @CasePathable
         enum ViewAction: Equatable {
-            case view
+            case onAppear
         }
         
         @CasePathable
         enum InnerAction: Equatable {
-            case inner
+            case prepareDisplayData
         }
     }
-    
+
     var body: some Reducer<State, Action> {
         CombineReducers {
             viewReducer

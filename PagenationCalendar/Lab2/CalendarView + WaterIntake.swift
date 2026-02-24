@@ -175,7 +175,6 @@ extension CalendarView {
     private var waveVerticalOffset: CGFloat {
         let outlineBorderHeight: CGFloat = 8
         let offset = (1.0 - waterFillRatio) * cupFrameSize.height - outlineBorderHeight
-        print("상갑 logEvent \(#function) offset \(offset)")
         return offset
     }
 
